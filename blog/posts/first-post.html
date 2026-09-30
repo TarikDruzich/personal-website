@@ -8,17 +8,14 @@
     <link rel="stylesheet" href="../../style.css">
 </head>
 <body>
-    <header>
-        <h2><a href="../../index.html">Tarik Druzich</a></h2>
-        <nav aria-label="Main navigation">
-            <a href="../../index.html">Home</a><span aria-hidden="true"> | </span><a href="../index.html">Blog</a><span aria-hidden="true"> | </span><a href="../../index.html#about">About</a>
-        </nav>
+    <header class="article-site-header">
+        <a class="site-name" href="../../index.html">Tarik Druzich</a>
     </header>
     <main>
         <article>
             <div class="post-heading">
                 <h1>My First Post</h1>
-                <p>Published <time datetime="2026-09-30">September 30, 2026</time></p>
+                <time class="publication-date" datetime="2026-09-30">30.09.2026</time>
             </div>
             <p class="placeholder">Placeholder article — replace the text below with your own writing before publishing. Update the title, description, and publication date as needed.</p>
             <p>Every website starts somewhere. This first post marks the beginning of a space for ideas, notes, and things I want to remember.</p>
@@ -27,10 +24,9 @@
             <p>This paragraph is also placeholder text. It could become a story about something you built, a reflection on a book, or a note about a problem you solved. Replace it with whatever you want to share.</p>
             <p>There is no need for a grand introduction. One useful thought at a time is a good beginning.</p>
         </article>
-        <nav class="post-links" aria-label="Return links">
-            <a href="../index.html">← All writings</a><span aria-hidden="true"> | </span><a href="../../index.html">Back to home</a>
-        </nav>
+        <div class="post-links">
+            <a href="../../index.html">← Back to blog</a>
+        </div>
     </main>
-    <footer><p>Tarik Druzich · A personal website.</p></footer>
 </body>
 </html>

@@ -1,42 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Personal website and writings of Tarik Druzich.">
     <title>Tarik Druzich</title>
     <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <header>
+    <header class="site-intro">
         <h1>Tarik Druzich</h1>
-        <nav aria-label="Main navigation">
-            <a href="index.html" aria-current="page">Home</a><span aria-hidden="true"> | </span><a href="blog/index.html">Blog</a><span aria-hidden="true"> | </span><a href="#about">About</a>
-        </nav>
+        <p class="introduction">Ovo je moj lični blog. Pišem o tehnologiji, učenju, projektima i stvarima koje me zanimaju.</p>
+        <div class="clock"><time id="local-clock" aria-label="Lokalni datum i vrijeme"></time></div>
+        <noscript><p class="clock-note">Uključite JavaScript za prikaz lokalnog datuma i vremena.</p></noscript>
     </header>
     <main>
-        <section aria-labelledby="welcome">
-            <h2 id="welcome">Welcome</h2>
-            <p>I'm Tarik. This is my little corner of the web: a place to write, think out loud, and share what I'm learning.</p>
-            <p class="placeholder">Placeholder introduction — replace this with a few words about yourself and what you want to write about.</p>
-        </section>
-        <section aria-labelledby="latest-writings">
-            <h2 id="latest-writings">Latest Writings</h2>
-            <ul class="writings">
-                <li>
-                    <time datetime="2026-09-30">September 30, 2026</time>
-                    <div>
-                        <a href="blog/posts/first-post.html">My First Post</a>
-                        <p>A placeholder post to begin this collection of writings.</p>
-                    </div>
+        <section aria-labelledby="blog-heading">
+            <h2 id="blog-heading">Blog</h2>
+            <!-- Keep posts newest first. -->
+            <ul class="post-list">
+                <li lang="en">
+                    <time class="publication-date" datetime="2026-09-30">30.09.2026</time>
+                    <h3><a href="blog/posts/first-post.html">My First Post</a></h3>
+                    <p>A placeholder post to begin this collection of writings.</p>
+            <p>sanel druzic</p>
                 </li>
             </ul>
         </section>
-        <section id="about" aria-labelledby="about-heading">
-            <h2 id="about-heading">About</h2>
-            <p class="placeholder">Placeholder bio — add your interests, background, and anything else you'd like readers to know.</p>
-        </section>
     </main>
-    <footer><p>Tarik Druzich · A personal website.</p></footer>
 </body>
 </html>

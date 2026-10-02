@@ -1,0 +1,133 @@
+PERSONAL WEBSITE — BLOG WORKFLOW
+================================
+
+1. UĐI U PROJEKAT
+
+cd ~/Projects/personal-website
+
+
+2. NOVI BLOG POST
+
+nvim blog/md/ime-posta.md
+
+Primjer:
+
+---
+title: Naslov posta
+description: Kratak opis posta.
+image: assets/images/slika.jpg
+alt: Opis slike
+---
+
+Ovdje pišem tekst.
+
+## Podnaslov
+
+Normalan tekst.
+
+**Bitna riječ**
+
+
+3. DODAJ SLIKU
+
+cp ~/Pictures/slika.jpg assets/images/slika.jpg
+
+
+4. GENERIŠI BLOG
+
+.venv/bin/python build_blog.py
+
+Ovo automatski:
+- pravi HTML u blog/posts/
+- dodaje post na index.html
+- dodaje datum i vrijeme
+- računa vrijeme čitanja
+
+
+5. PREGLED LOKALNO
+
+python -m http.server 8000
+
+Otvori:
+
+http://localhost:8000
+
+ili:
+
+xdg-open http://localhost:8000
+
+Ugasi server:
+
+Ctrl+C
+
+
+6. AKO MIJENJAM POST
+
+NE uređujem blog/posts/*.html.
+
+Uvijek uređujem Markdown:
+
+nvim blog/md/ime-posta.md
+
+Nakon izmjene:
+
+.venv/bin/python build_blog.py
+
+
+7. GIT
+
+Provjera:
+
+git status
+
+Dodaj sve:
+
+git add -A
+
+Commit:
+
+git commit -m "Add new blog post"
+
+ili:
+
+git commit -m "Update blog post"
+
+Push:
+
+git push
+
+Provjera:
+
+git status
+
+
+UKRATKO
+=======
+
+PIŠI:
+
+nvim blog/md/ime-posta.md
+
+BUILD:
+
+.venv/bin/python build_blog.py
+
+PROVJERI:
+
+python -m http.server 8000
+
+OBJAVI:
+
+git add -A
+git commit -m "Add new blog post"
+git push
+
+
+VAŽNO
+=====
+
+Markdown fajlovi u blog/md/ su originalni postovi.
+
+HTML fajlovi u blog/posts/ su generisani.
+
+Ne uređivati generisani HTML ručno.

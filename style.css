@@ -78,3 +78,60 @@ article h2 { margin: 2rem 0 1rem; }
 @media (prefers-reduced-motion: reduce) {
     a { transition: none; }
 }
+
+.post-cover-wrap {
+    width: 100%;
+    margin: 0 0 2rem;
+    text-align: center;
+}
+
+.post-cover {
+    display: block;
+    width: min(100%, 720px);
+    max-height: 430px;
+    margin: 0 auto;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.post-heading {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.post-heading h1 {
+    margin-bottom: 0.5rem;
+}
+
+.post-body {
+    line-height: 1.8;
+}
+
+.post-body p {
+    margin: 1.2rem 0;
+}
+
+.post-body img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 2rem auto;
+}
+
+.post-body pre {
+    overflow-x: auto;
+    padding: 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+}
+
+.post-body code {
+    font-family: ui-monospace, monospace;
+}
+
+.post-body blockquote {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+    color: var(--muted);
+}

@@ -1,82 +1,185 @@
-PERSONAL WEBSITE — BLOG WORKFLOW
-================================
+PERSONAL WEBSITE — KREIRANJE NOVOG BLOGA
+=========================================
+
 
 1. UĐI U PROJEKAT
+-----------------
 
 cd ~/Projects/personal-website
 
 
-2. NOVI BLOG POST
+2. UBACI SLIKU
+--------------
 
-nvim blog/md/ime-posta.md
+Ako je slika u ~/Pictures:
+
+cp ~/Pictures/ime-slike.jpg assets/images/ime-slike.jpg
+
+Provjera:
+
+ls assets/images
+
+
+3. KREIRAJ NOVI MARKDOWN POST
+-----------------------------
+
+Ime fajla:
+- bez razmaka
+- bez č, ć, š, ž, đ
+- koristi crtice
 
 Primjer:
 
+nvim blog/md/moj-novi-blog.md
+
+
+4. TEMPLATE ZA NOVI BLOG
+------------------------
+
+KOPIRAJ OVO U .md FAJL:
+
+
 ---
-title: Naslov posta
-description: Kratak opis posta.
-image: assets/images/slika.jpg
-alt: Opis slike
+title: Ovdje ide naslov bloga
+description: Ovdje ide kratak opis bloga koji će se prikazati na početnoj stranici.
+image: assets/images/ime-slike.jpg
+alt: Kratak opis slike
 ---
 
-Ovdje pišem tekst.
+Ovdje počinje tekst bloga.
 
-## Podnaslov
+Prvi paragraf mogu normalno napisati ovdje.
 
-Normalan tekst.
+## Prvi podnaslov
 
-**Bitna riječ**
+Ovdje ide tekst prve sekcije.
+
+Mogu naglasiti **bitne riječi** koristeći dvije zvjezdice.
+
+## Drugi podnaslov
+
+Ovdje ide još teksta.
+
+Mogu koristiti listu:
+
+- prva stvar
+- druga stvar
+- treća stvar
+
+## Outro
+
+Završni dio bloga.
 
 
-3. DODAJ SLIKU
+5. MARKDOWN KOJI TREBAM ZNATI
+-----------------------------
 
-cp ~/Pictures/slika.jpg assets/images/slika.jpg
+Glavni podnaslov:
+
+## Naslov
+
+Manji podnaslov:
+
+### Naslov
+
+Bold:
+
+**bitna riječ**
+
+Italic:
+
+*tekst*
+
+Lista:
+
+- stavka
+- stavka
+- stavka
+
+Kod:
+
+`neka-komanda`
+
+Link:
+
+[GitHub](https://github.com/)
 
 
-4. GENERIŠI BLOG
+6. SAČUVAJ U NVIM
+-----------------
+
+:wq
+
+
+7. GENERIŠI HTML
+----------------
 
 .venv/bin/python build_blog.py
 
-Ovo automatski:
+Generator automatski:
+
 - pravi HTML u blog/posts/
-- dodaje post na index.html
-- dodaje datum i vrijeme
+- dodaje blog na index.html
+- dodaje datum
+- dodaje vrijeme
+- dodaje slug
 - računa vrijeme čitanja
 
 
-5. PREGLED LOKALNO
+8. PREGLEDAJ BLOG
+-----------------
+
+Pokreni server:
 
 python -m http.server 8000
 
-Otvori:
-
-http://localhost:8000
-
-ili:
+Otvori homepage:
 
 xdg-open http://localhost:8000
 
+Ili direktno određeni blog:
+
+xdg-open http://localhost:8000/blog/posts/ime-posta.html
+
+Ako CSS izgleda staro:
+
+Ctrl + Shift + R
+
 Ugasi server:
 
-Ctrl+C
+Ctrl + C
 
 
-6. AKO MIJENJAM POST
+9. AKO ŽELIM EDITOVATI POST
+---------------------------
 
-NE uređujem blog/posts/*.html.
+VAŽNO:
 
-Uvijek uređujem Markdown:
+NE EDITUJ:
 
-nvim blog/md/ime-posta.md
+blog/posts/ime-posta.html
 
-Nakon izmjene:
+To je generisani HTML.
+
+
+EDITUJ:
+
+blog/md/ime-posta.md
+
+
+Primjer:
+
+nvim blog/md/moj-novi-blog.md
+
+Nakon izmjene OBAVEZNO:
 
 .venv/bin/python build_blog.py
 
 
-7. GIT
+10. OBJAVI NA GITHUB
+--------------------
 
-Provjera:
+Provjeri promjene:
 
 git status
 
@@ -84,11 +187,11 @@ Dodaj sve:
 
 git add -A
 
-Commit:
+Commit za novi blog:
 
 git commit -m "Add new blog post"
 
-ili:
+Commit za editovan blog:
 
 git commit -m "Update blog post"
 
@@ -101,33 +204,55 @@ Provjera:
 git status
 
 
-UKRATKO
-=======
+11. CIJELI WORKFLOW UKRATKO
+---------------------------
 
-PIŠI:
+cd ~/Projects/personal-website
 
 nvim blog/md/ime-posta.md
 
-BUILD:
-
 .venv/bin/python build_blog.py
-
-PROVJERI:
 
 python -m http.server 8000
 
-OBJAVI:
-
+git status
 git add -A
 git commit -m "Add new blog post"
 git push
 
 
-VAŽNO
-=====
+12. STRUKTURA PROJEKTA
+----------------------
 
-Markdown fajlovi u blog/md/ su originalni postovi.
+personal-website/
+│
+├── index.html
+├── style.css
+├── script.js
+├── build_blog.py
+├── BLOG_KREACIJA.txt
+│
+├── assets/
+│   └── images/
+│       └── slike-blogova.jpg
+│
+└── blog/
+    ├── md/
+    │   └── originalni-postovi.md
+    │
+    └── posts/
+        └── generisani-postovi.html
 
-HTML fajlovi u blog/posts/ su generisani.
 
-Ne uređivati generisani HTML ručno.
+VAŽNO ZA ZAPAMTITI
+==================
+
+blog/md/
+= ORIGINALNI BLOGOVI KOJE EDITUJEM
+
+blog/posts/
+= AUTOMATSKI GENERISANI HTML — NE EDITUJEM RUČNO
+
+Proces:
+
+PIŠI → BUILD → PROVJERI → COMMIT → PUSH

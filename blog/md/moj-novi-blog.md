@@ -1,12 +1,15 @@
-
 ---
 title: Izbori 2026
 description: Ovdje ide kratak opis bloga koji će se prikazati na početnoj stranici.
 image: assets/images/ime-slike.jpg
 alt: Izbori 2026
+date: 2026-10-04
+time: 00:22
+slug: moj-novi-blog
 ---
 
-# Izbori 2026
+
+
 Da bi kandidat sa dna liste uspio nesto mora imati 20% preferncijalnih glasova od ukupnih glsaova stranke.
 Danas sam gledao prosle godine Mirsad Hadzikadic imao malo glasova a cojek dokotr nauka kompjuterskih nauka
 

@@ -9,4 +9,13 @@ cover: /uploads/Screenshot 2026-10-14 174045.png
 coverAlt: mac
 coverCaption: epppp
 ---
-Ovo je moj privi text
+Ovo je prvi pasus mog članka.
+
+Ovdje želim ubaciti fotografiju.
+
+![](/uploads/slikeBlog/screenshot-2026-10-14-175438.png)
+
+Ovo je nastavak članka nakon fotografije.
+
+/
+

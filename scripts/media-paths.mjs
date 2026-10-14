@@ -1,16 +1,22 @@
 // Keep CMS media URLs portable between a project URL and a custom domain.
-export function mediaPaths({ base }) {
-  const prefix = base.replace(/\/$/, '');
+export function mediaPaths({ base = '/' } = {}) {
+  const basePath = base.replace(/^\/+|\/+$/g, '');
+  const prefix = basePath ? `/${basePath}` : '';
+  const mediaUrl = (value) => {
+    // CMS stores portable /uploads URLs. Leave external and already-based URLs alone.
+    if (typeof value !== 'string' || !/^\/(?:assets|uploads)\//.test(value)) return value;
+    return `${prefix}/${value.replace(/^\//, '')}`;
+  };
   return (tree) => {
     function visit(node) {
       // Figures/captions entered as HTML remain raw nodes in the Markdown AST.
       if (node.type === 'raw') {
-        node.value = node.value.replace(/(\b(?:src|href)\s*=\s*["'])(\/(?:assets|uploads)\/[^"']*)(["'])/g, (_, start, path, end) => start + prefix + path + end);
+        node.value = node.value.replace(/<(?:img|a)\b[^>]*>/gi, (tag) => tag.replace(/(\b(?:src|href)\s*=\s*["'])([^"']*)(["'])/gi, (_, start, path, end) => start + mediaUrl(path) + end));
       }
       if (node.type === 'element') {
         for (const key of ['src', 'href']) {
           const value = node.properties?.[key];
-          if (typeof value === 'string' && /^\/(assets|uploads)\//.test(value)) node.properties[key] = prefix + value;
+          if (typeof value === 'string') node.properties[key] = mediaUrl(value);
         }
         if (node.tagName === 'img') { node.properties.loading = 'lazy'; node.properties.decoding = 'async'; }
       }

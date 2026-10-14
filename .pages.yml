@@ -1,6 +1,10 @@
 media:
-  input: public/uploads
-  output: /uploads
+  - name: images
+    label: Slike
+    input: public/uploads
+    output: /uploads
+    categories: [image]
+    rename: safe
 content:
   - name: posts
     label: Tekstovi
@@ -48,6 +52,8 @@ content:
       - name: cover
         label: Naslovna slika (opcionalno)
         type: image
+        options:
+          media: images
       - name: coverAlt
         label: Opis naslovne slike (obavezan uz sliku)
         type: string
@@ -60,3 +66,7 @@ content:
       - name: body
         label: Tekst
         type: rich-text
+        options:
+          format: markdown
+          media: images
+          switcher: true

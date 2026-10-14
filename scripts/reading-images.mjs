@@ -1,9 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
 import { imageMetadata } from 'astro/assets/utils';
+import { mediaUrl } from './media-url.mjs';
 
 // Public uploads remain unchanged; only generated HTML receives intrinsic dimensions.
 export async function localImageDimensions(src, base = '/', publicDir = 'public') {
+  src = mediaUrl(src, base);
   if (typeof src !== 'string' || !src.startsWith('/') || src.startsWith('//')) return undefined;
   const prefix = base.replace(/\/$/, '');
   let path = src;

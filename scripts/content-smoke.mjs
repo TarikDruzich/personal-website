@@ -27,7 +27,7 @@ try {
   run(astroCli, ['build']);
   run('scripts/verify.mjs');
   const html = readFileSync('dist/writing/qa-publishing-fixture/index.html', 'utf8');
-  const base = (process.env.BASE_PATH ?? '/personal-website').replace(/\/$/, '');
+  const base = (process.env.BASE_PATH ?? '/').replace(/\/$/, '');
   for (const fragment of ['Prva inline slika', 'Druga inline slika', 'Tekst prije slike.', 'Preuzmi sliku', 'astro-code', '<span style="color:', '<blockquote>', '<figcaption>', 'Potpis testne slike', 'article:modified_time', '#rust', `${base}/uploads/qa-fixture.svg`]) assert(html.includes(fragment), `Missing Markdown/metadata feature: ${fragment}`);
   if (base) assert(!html.includes(`${base}${base}/uploads/`), 'Duplicate image base path');
   // Simulate the CMS draft-to-published transition, keeping the same filename.

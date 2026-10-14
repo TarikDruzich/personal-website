@@ -17,8 +17,8 @@ jobs:
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
-      SITE_URL: ${{ vars.SITE_URL || 'https://tarikdruzich.github.io' }}
-      BASE_PATH: ${{ vars.BASE_PATH || '/personal-website' }}
+      SITE_URL: https://tarikdruzich.xyz
+      BASE_PATH: /
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6

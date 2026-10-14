@@ -4,8 +4,8 @@ import { unified } from '@astrojs/markdown-remark';
 import { mediaPaths } from './scripts/media-paths.mjs';
 import { readingImages } from './scripts/reading-images.mjs';
 
-const site = process.env.SITE_URL || 'https://tarikdruzich.github.io';
-const base = process.env.BASE_PATH ?? '/personal-website';
+const site = process.env.SITE_URL || 'https://tarikdruzich.xyz';
+const base = process.env.BASE_PATH ?? '/';
 export default defineConfig({
   site, base, trailingSlash: 'always', output: 'static',
   integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') })],

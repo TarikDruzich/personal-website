@@ -22,7 +22,7 @@ function build() {
 const delay = (ms) => new Promise((done) => setTimeout(done, ms));
 let browser, server, socket;
 const results = [];
-const base = (process.env.BASE_PATH ?? '/personal-website').replace(/\/$/, '');
+const base = (process.env.BASE_PATH ?? '/').replace(/\/$/, '');
 
 // Evaluated inside Chrome: actual geometry, rendered colors, images, and semantics.
 function measure() {

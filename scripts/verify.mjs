@@ -5,8 +5,8 @@ import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 
 const root = resolve('dist');
-const base = (process.env.BASE_PATH ?? '/personal-website').replace(/\/$/, '');
-const origin = process.env.SITE_URL || 'https://tarikdruzich.github.io';
+const base = (process.env.BASE_PATH ?? '/').replace(/\/$/, '');
+const origin = process.env.SITE_URL || 'https://tarikdruzich.xyz';
 function files(dir) { return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => entry.isDirectory() ? files(join(dir, entry.name)) : [join(dir, entry.name)]); }
 assert(existsSync(root), 'Run npm run build first.');
 const output = files(root);
@@ -17,12 +17,24 @@ for (const file of output.filter((path) => path.endsWith('.html'))) {
   assert(html.includes('lang="bs"'), `Missing Bosnian language: ${file}`);
   assert(/<title>[^<]+<\/title>/.test(html), `Missing title: ${file}`);
   assert(/rel="canonical"/.test(html), `Missing canonical: ${file}`);
-  for (const match of html.matchAll(/<(?:a|link|img|script)\b[^>]*?\b(?:href|src)="([^"]+)"/g)) {
+  for (const match of html.matchAll(/(?:rel="canonical" href|property="og:url" content)="([^"]+)"/g)) {
+    const target = new URL(match[1]);
+    assert.equal(target.origin, new URL(origin).origin, `Wrong SEO origin: ${file}`);
+    assert(!target.pathname.includes('/personal-website/'), `Legacy SEO path: ${file}`);
+    assert(!target.pathname.includes('//'), `Duplicate SEO slash: ${file}`);
+  }
+  const references = [
+    ...html.matchAll(/<(?:a|link|img|script)\b[^>]*?\b(?:href|src)="([^"]+)"/g),
+    ...html.matchAll(/<meta (?:property="og:image"|name="twitter:image") content="([^"]+)"/g),
+  ];
+  for (const match of references) {
     const value = match[1].replaceAll('&amp;', '&');
     if (/^(mailto:|tel:|data:|#)/.test(value)) continue;
     const target = new URL(value, `${origin}${base}/${file.slice(root.length + 1).replaceAll('\\', '/')}`);
     if (target.origin !== new URL(origin).origin) continue;
     const pathname = decodeURIComponent(target.pathname);
+    if (!base) assert(!pathname.includes('/personal-website/'), `Legacy project path: ${value}`);
+    assert(!pathname.includes('//'), `Duplicate slash: ${value}`);
     assert(!base || pathname === base || pathname.startsWith(`${base}/`), `Base path lost: ${value} in ${file}`);
     const local = join(root, pathname.slice(base.length));
     assert(existsSync(local), `Broken local link/image: ${value} in ${file}`);
@@ -35,6 +47,16 @@ const rss = readFileSync(join(root, 'rss.xml'), 'utf8');
 assert(rss.includes('<rss') && rss.includes('<language>bs</language>'), 'RSS missing or invalid language');
 for (const link of rss.matchAll(/<link>([^<]+)<\/link>/g)) assert(link[1].startsWith(`${origin}${base}`), `RSS base path lost: ${link[1]}`);
 const sitemap = output.filter((p) => /sitemap.*\.xml$/.test(p)).map((p) => readFileSync(p, 'utf8')).join('');
+for (const match of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+  const target = new URL(match[1]);
+  assert.equal(target.origin, new URL(origin).origin, `Wrong sitemap origin: ${match[1]}`);
+  if (!base) assert(!target.pathname.includes('/personal-website/'), `Legacy sitemap path: ${match[1]}`);
+}
+for (const source of files('public/uploads')) {
+  const deployed = join(root, source.slice('public'.length));
+  assert(existsSync(deployed), `Upload missing from build: ${source}`);
+  assert(readFileSync(source).equals(readFileSync(deployed)), `Upload changed in build: ${source}`);
+}
 assert(!sitemap.includes('/blog/posts/'), 'Compatibility pages must not appear in sitemap');
 for (const route of ['projects', 'about', 'now', 'blog', 'writing/category']) assert(!existsSync(join(root, route)), `Removed route leaked: ${route}`);
 // Normalize only line endings so Git's Windows checkout conversion is harmless.

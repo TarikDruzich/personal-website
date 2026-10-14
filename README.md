@@ -6,7 +6,7 @@ Minimal Bosnian personal blog built with Astro. Main pages: `/` and `/writing/`;
 
 Use Node 24. Run `npm.cmd ci`, `npm.cmd run dev`, `npm.cmd run check`, `npm.cmd run build`, and `npm.cmd run verify`. `npm.cmd run test:content` temporarily exercises publishing and drafts, removes its fixtures, and restores the real build.
 
-The default base is `/personal-website/`. `SITE_URL` and `BASE_PATH` configure a custom domain. Build output is `dist/`.
+Production defaults to `https://tarikdruzich.xyz` with base `/`. Local development still uses the Astro dev server. `SITE_URL` and `BASE_PATH` can override local builds; GitHub Actions explicitly pins the production domain and root base so stale repository variables cannot restore the old project URL. Build output is `dist/`.
 
 ## Writing with Pages CMS
 
@@ -43,9 +43,11 @@ Keep HTML figures in Source mode when editing captions; switching visual editors
 
 Configuration uses the supported [rich-text options](https://pagescms.org/docs/configuration/fields/rich-text/) and [media sources](https://pagescms.org/docs/configuration/media/). The Astro unified rehype plugin prefixes local upload paths once at build time. External URLs are unchanged. Existing aspect-ratio and responsive image styles apply to all article images. The authenticated CMS picker/save flow still needs testing in your account.
 
-## Custom domain later
+## Custom domain
 
-Set GitHub repository Actions variables `SITE_URL` to the HTTPS origin (for example `https://example.com`) and `BASE_PATH` to `/`. Configure the custom domain and DNS in GitHub Pages; add `public/CNAME` if required by that setup. No changes to `.pages.yml` or portable `/uploads/` article paths are needed. Rebuild and verify after changing these variables. Already-prefixed paths are tolerated on the current site, but use portable paths in saved content to avoid needing edits when the base changes.
+The build is prepared for https://tarikdruzich.xyz/. Leave DNS and GitHub Pages settings unchanged while DNS verification is pending. No CNAME file is needed for this custom GitHub Actions deployment ([GitHub documentation](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)). Pushes to main and manual workflow dispatches still deploy automatically; keep this migration local until ready to publish.
+
+Pages CMS configuration and article source are unchanged. Known local media URLs, including legacy project paths, relative uploads, and absolute URLs on the old site, normalize during rendering. Remote images keep their URLs. Covers and inline images use the same normalization, preserving alt text, captions, and responsive styles.
 
 Run `npm.cmd run test:images` for renderer/path tests. `npm.cmd run test:content` tests inline Markdown images, figures, covers, other Markdown features, and draft transitions in real article builds, cleaning up its temporary fixtures afterward.
 

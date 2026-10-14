@@ -1,6 +1,13 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { mediaUrl } from '../../scripts/media-url.mjs';
 export const site = { name: 'Tarik Družić', description: 'Zapisujem šta mi padne na pamet.' };
-export const url = (path = '') => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+export const url = (path = '') => {
+  const media = mediaUrl(path, import.meta.env.BASE_URL);
+  if (media !== path || /^(?:\/\/|[a-z][a-z\d+.-]*:)/i.test(path)) return media;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  if (base && path.startsWith(`${base}/`)) return path;
+  return `${base}/${path.replace(/^\/+/, '')}`;
+};
 export const articleUrl = (post: CollectionEntry<'posts'>) => url(`writing/${post.id}/`);
 export const publicationKey = (post: CollectionEntry<'posts'>) => `${post.data.date.toISOString().slice(0, 10)}T${post.data.time || '00:00'}`;
 export async function publishedPosts() {

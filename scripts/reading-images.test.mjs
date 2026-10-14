@@ -13,7 +13,10 @@ test('build-time dimensions reserve local image space without changing URLs or a
   mkdirSync(uploads);
   const image = join(uploads, 'landscape.svg');
   writeFileSync(image, '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700"></svg>');
+  const portrait = join(uploads, 'portrait.svg');
+  writeFileSync(portrait, '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="500"></svg>');
   try {
+    for (const src of ['../uploads/portrait.svg', '/personal-website/uploads/portrait.svg', 'https://tarikdruzich.github.io/personal-website/uploads/portrait.svg']) assert.deepEqual(await localImageDimensions(src, '/', publicDir), { width: 300, height: 500 });
     for (const base of ['/personal-website', '/']) {
       const prefix = base.replace(/\/$/, '');
       assert.deepEqual(await localImageDimensions(`${prefix}/uploads/landscape.svg?version=1`, base, publicDir), { width: 1200, height: 700 });
@@ -39,6 +42,7 @@ test('build-time dimensions reserve local image space without changing URLs or a
     for (const path of ['//example.com/uploads/image.png', 'https://example.com/image.png', '/uploads/missing.png', '/uploads/../../package.json']) assert.equal(await localImageDimensions(path, '/', publicDir), undefined);
   } finally {
     unlinkSync(image);
+    unlinkSync(portrait);
     rmdirSync(uploads);
     rmdirSync(publicDir);
   }

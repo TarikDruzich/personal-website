@@ -4,6 +4,19 @@ import { readFileSync } from 'node:fs';
 import YAML from 'yaml';
 import { createMarkdownProcessor } from '@astrojs/markdown-remark';
 import { mediaPaths } from './media-paths.mjs';
+import { mediaUrl } from './media-url.mjs';
+
+test('custom-domain media migration preserves suffixes and external URLs', async () => {
+  for (const path of ['/uploads/photo.png', 'uploads/photo.png', './uploads/photo.png', '../uploads/photo.png', '/personal-website/uploads/photo.png', '/personal-website/personal-website/uploads/photo.png', '/personal-website//uploads//photo.png', 'https://tarikdruzich.github.io/personal-website/uploads/photo.png', 'https://tarikdruzich.xyz/uploads/photo.png']) {
+    assert.equal(mediaUrl(`${path}?v=1#image`), '/uploads/photo.png?v=1#image');
+    assert.equal(mediaUrl(mediaUrl(path)), '/uploads/photo.png');
+    const renderer = await createMarkdownProcessor({ rehypePlugins: [[mediaPaths, { base: '/' }]] });
+    const { code } = await renderer.render(`![Original alt](${path})\n\n<figure><img src="${path}" alt="Portrait alt" /><figcaption>Original caption</figcaption></figure>`);
+    assert.equal([...code.matchAll(/src="\/uploads\/photo.png"/g)].length, 2);
+    assert(code.includes('Original alt') && code.includes('Portrait alt') && code.includes('Original caption'));
+  }
+  for (const path of ['https://example.com/uploads/photo.png', '//example.com/uploads/photo.png', 'data:image/png;base64,abc', 'https://tarikdruzich.github.io/other/uploads/photo.png']) assert.equal(mediaUrl(path), path);
+});
 
 test('CMS body and cover use the same portable upload source', () => {
   const config = YAML.parse(readFileSync('.pages.yml', 'utf8'));

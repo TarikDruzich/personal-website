@@ -16,9 +16,9 @@ Create a Markdown entry in **Tekstovi**, choose a permanent filename, enter titl
 
 Markdown files live in `src/content/posts/`. No sample articles are included. Drafts are excluded from pages, RSS, and sitemap. Pages CMS authentication and live saves require account testing.
 
-## Local archive
+## Source-only archive
 
-The three removed articles' complete current Markdown files are preserved in `archive/private-posts/`. Earlier source material remains in `archive/legacy/`. The entire archive is Git-ignored and outside Astro content and public directories. Keep a local backup; the archive is neither deployed nor included in future source commits. Old article URLs and redirects have been removed.
+The three removed articles' complete current Markdown files are preserved in `archive/private-posts/`. Earlier source material remains in `archive/legacy/`. The three Markdown files in `archive/private-posts/` are tracked by Git and outside Astro content and public directories. They are included in source checkouts, but never deployed. The directory name does not imply repository privacy: anyone with repository access can read these files. Other legacy material remains local and Git-ignored. Verification checks exact path casing, Git tracking, content hashes (ignoring CRLF versus LF), and build exclusion. Old article URLs and redirects have been removed.
 
 ## Deployment
 

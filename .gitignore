@@ -8,4 +8,10 @@ dist/
 .env.*
 !.env.example
 
-archive/
+# Keep legacy assets local; track only the three source-only archived articles.
+archive/*
+!archive/private-posts/
+archive/private-posts/*
+!archive/private-posts/kako-ucim-programiranje.md
+!archive/private-posts/linux-na-thinkpadu.md
+!archive/private-posts/moj-novi-blog.md

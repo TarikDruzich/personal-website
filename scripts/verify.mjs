@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 
@@ -35,8 +37,24 @@ for (const link of rss.matchAll(/<link>([^<]+)<\/link>/g)) assert(link[1].starts
 const sitemap = output.filter((p) => /sitemap.*\.xml$/.test(p)).map((p) => readFileSync(p, 'utf8')).join('');
 assert(!sitemap.includes('/blog/posts/'), 'Compatibility pages must not appear in sitemap');
 for (const route of ['projects', 'about', 'now', 'blog', 'writing/category']) assert(!existsSync(join(root, route)), `Removed route leaked: ${route}`);
-for (const slug of ['kako-ucim-programiranje', 'linux-na-thinkpadu', 'moj-novi-blog']) {
-  assert(existsSync(`archive/private-posts/${slug}.md`), `Local archive missing: ${slug}`);
+// Normalize only line endings so Git's Windows checkout conversion is harmless.
+const archivedPosts = {
+  'kako-ucim-programiranje': '678492f7aac6351181866b7f90ae1ca2fc17f32a634558176d997e47a7487f67',
+  'linux-na-thinkpadu': '986843a0eb30466720657f83458a0518e8bcd60617b67ebc05a6db021b2e1114',
+  'moj-novi-blog': 'd6786aa37a332ed94ada8b41e848438cd6e105573a45d87055ba33fcbb2ec6d0',
+};
+const archiveDir = join('archive', 'private-posts');
+assert(readdirSync('.').includes('archive') && readdirSync('archive').includes('private-posts'), 'Archive directory casing mismatch');
+const archiveNames = readdirSync(archiveDir);
+const trackedFiles = new Set(execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8', windowsHide: true }).split('\0'));
+for (const [slug, expectedHash] of Object.entries(archivedPosts)) {
+  const name = `${slug}.md`;
+  const archivePath = join(archiveDir, name);
+  assert(existsSync(archivePath), `Local archive missing: ${slug}`);
+  assert(archiveNames.includes(name), `Archive filename casing mismatch: ${name}`);
+  assert(trackedFiles.has(`archive/private-posts/${name}`), `Archive not tracked by Git: ${name}`);
+  const source = readFileSync(archivePath, 'utf8').replaceAll('\r\n', '\n');
+  assert.equal(createHash('sha256').update(source).digest('hex'), expectedHash, `Archived article changed: ${slug}`);
   for (const file of output) {
     assert(!file.includes(slug), `Archived route leaked: ${file}`);
     if (/\.(html|xml)$/.test(file)) assert(!readFileSync(file, 'utf8').includes(slug), `Archived post leaked: ${file}`);

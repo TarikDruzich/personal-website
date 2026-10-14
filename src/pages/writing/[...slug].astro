@@ -1,0 +1,14 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { publishedPosts, articleUrl, formatDate, readingTime, url } from '../../lib/site';
+export async function getStaticPaths() { const posts = await publishedPosts(); return posts.map((post, i) => ({ params: { slug: post.id }, props: { post, newer: posts[i - 1], older: posts[i + 1] } })); }
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+---
+<Base title={post.data.title} description={post.data.description} image={post.data.cover} imageAlt={post.data.coverAlt} article published={post.data.date.toISOString()} updated={post.data.updated?.toISOString()}>
+  <article><header class="article-heading"><a class="eyebrow" href={url('writing/')}>← Tekstovi</a><h1>{post.data.title}</h1><div class="metadata"><time datetime={post.data.date.toISOString().slice(0,10)}>{formatDate(post.data.date)}{post.data.time && ` · ${post.data.time}`}</time><span>{post.data.category}</span><span>{readingTime(post.body)} min čitanja</span></div>{post.data.updated && <p class="metadata">Ažurirano <time datetime={post.data.updated.toISOString()}>{formatDate(post.data.updated)}</time></p>}{post.data.tags.length > 0 && <ul class="tags" aria-label="Oznake">{post.data.tags.map((tag) => <li>#{tag}</li>)}</ul>}</header>
+  {post.data.cover && <figure class="cover"><img src={url(post.data.cover)} alt={post.data.coverAlt} fetchpriority="high" />{post.data.coverCaption && <figcaption>{post.data.coverCaption}</figcaption>}</figure>}
+  <div class="prose"><Content /></div></article>
+  <nav class="article-navigation" aria-label="Drugi tekstovi">{older ? <a href={articleUrl(older)}><span class="eyebrow">← Stariji tekst</span><span>{older.data.title}</span></a> : <span />}{newer && <a href={articleUrl(newer)}><span class="eyebrow">Noviji tekst →</span><span>{newer.data.title}</span></a>}</nav>
+</Base>

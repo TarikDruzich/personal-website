@@ -1,0 +1,5 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/site';
+---
+<Base title="Stranica nije pronađena" canonicalPath={url('404.html')} noindex><div class="page-heading"><p class="eyebrow">Greška 404</p><h1>Ovdje nema ničega.</h1><p>Možda je poveznica stara, a možda je stranica promijenila adresu.</p><a href={url()}>← Povratak na početnu</a></div></Base>

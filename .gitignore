@@ -1,1 +1,17 @@
 .venv/
+node_modules/
+dist/
+.astro/
+.npm-cache/
+.qa/
+.env
+.env.*
+!.env.example
+
+# Keep legacy assets local; track only the three source-only archived articles.
+archive/*
+!archive/private-posts/
+archive/private-posts/*
+!archive/private-posts/kako-ucim-programiranje.md
+!archive/private-posts/linux-na-thinkpadu.md
+!archive/private-posts/moj-novi-blog.md

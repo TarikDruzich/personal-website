@@ -1,0 +1,62 @@
+media:
+  input: public/uploads
+  output: /uploads
+content:
+  - name: posts
+    label: Tekstovi
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      primary: title
+      fields: [title, date, category, draft]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Naslov
+        type: string
+        required: true
+      - name: date
+        label: Datum objave
+        type: date
+        required: true
+      - name: description
+        label: Kratak opis
+        type: text
+        required: true
+      - name: category
+        label: Kategorija
+        type: string
+        required: true
+        default: Bilješke
+      - name: tags
+        label: Oznake
+        type: string
+        list: true
+      - name: draft
+        label: Nacrt (isključiti za objavu)
+        type: boolean
+        default: true
+      - name: updated
+        label: Datum izmjene (opcionalno)
+        type: date
+      - name: cover
+        label: Naslovna slika (opcionalno)
+        type: image
+      - name: coverAlt
+        label: Opis naslovne slike (obavezan uz sliku)
+        type: string
+      - name: coverCaption
+        label: Potpis naslovne slike
+        type: string
+      - name: time
+        label: Vrijeme objave (HH:mm, opcionalno)
+        type: string
+      - name: body
+        label: Tekst
+        type: rich-text

@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import { publishedPosts, site, url } from '../lib/site';
+const posts = (await publishedPosts()).slice(0, 5);
+---
+<Base>
+  <section class="intro" aria-labelledby="intro-title"><h1 id="intro-title">{site.name}</h1><p class="intro-line">{site.description}</p></section>
+  <section class="home-section" aria-labelledby="writing-title"><div class="section-heading"><h2 id="writing-title">Posljednji tekstovi</h2><a href={url('writing/')}>Svi tekstovi →</a></div><PostList posts={posts} /></section>
+</Base>

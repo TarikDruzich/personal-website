@@ -19,6 +19,15 @@ export function mediaPaths({ base = '/' } = {}) {
           if (typeof value === 'string') node.properties[key] = mediaUrl(value);
         }
         if (node.tagName === 'img') { node.properties.loading = 'lazy'; node.properties.decoding = 'async'; }
+        if (node.tagName === 'pre') {
+          node.properties.tabIndex = 0;
+          node.properties.role = 'region';
+          node.properties.ariaLabel = 'Blok koda';
+        }
+        if (node.tagName === 'table') {
+          node.properties.tabIndex = 0;
+          node.properties.ariaLabel = 'Tabela u tekstu';
+        }
       }
       if (node.children) {
         // An original article contains a bare "##". Preserve its source while

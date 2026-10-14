@@ -48,3 +48,9 @@ Configuration uses the supported [rich-text options](https://pagescms.org/docs/c
 Set GitHub repository Actions variables `SITE_URL` to the HTTPS origin (for example `https://example.com`) and `BASE_PATH` to `/`. Configure the custom domain and DNS in GitHub Pages; add `public/CNAME` if required by that setup. No changes to `.pages.yml` or portable `/uploads/` article paths are needed. Rebuild and verify after changing these variables. Already-prefixed paths are tolerated on the current site, but use portable paths in saved content to avoid needing edits when the base changes.
 
 Run `npm.cmd run test:images` for renderer/path tests. `npm.cmd run test:content` tests inline Markdown images, figures, covers, other Markdown features, and draft transitions in real article builds, cleaning up its temporary fixtures afterward.
+
+## Reading layout and accessibility checks
+
+Typography and responsive styles live in `src/styles/global.css`. The site uses system fonts, serif headings, 18px desktop / 17px mobile article text, 1.75 line spacing, a centered 70ch measure, and larger monospace navigation/metadata. Local article images receive build-time dimensions using [Astro imageMetadata](https://docs.astro.build/en/reference/modules/astro-assets/#imagemetadata), reserving space before loading while preserving original image files and authored dimensions. For external images, specify known width and height in HTML when possible.
+
+`npm.cmd run test:accessibility` runs headless Chrome viewport, contrast, text-resizing, image, and keyboard tests with a temporary article; it removes fixtures and restores the production build. Set `CHROME_PATH` if Chrome is installed elsewhere. `npm.cmd run test:images` covers portable media paths and intrinsic dimensions. No client-side scripts or extra frontend dependencies are required. Recorded results and manual verification limits are in [docs/VALIDATION.md](docs/VALIDATION.md).

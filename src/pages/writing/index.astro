@@ -4,4 +4,4 @@ import PostList from '../../components/PostList.astro';
 import { publishedPosts } from '../../lib/site';
 const posts = await publishedPosts();
 ---
-<Base title="Tekstovi" description="Arhiva tekstova Tarika Družića."><header class="page-heading"><h1>Tekstovi</h1></header><PostList posts={posts} /></Base>
+<Base title="Tekstovi" description="Arhiva tekstova Tarika Družića."><header class="page-heading"><h1>Tekstovi</h1></header><PostList posts={posts} headingLevel="h2" /></Base>

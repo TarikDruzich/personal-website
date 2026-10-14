@@ -11,7 +11,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "verify": "node scripts/verify.mjs",
-    "test:images": "node --test scripts/media-paths.test.mjs",
+    "test:images": "node --test scripts/media-paths.test.mjs scripts/reading-images.test.mjs",
+    "test:accessibility": "node scripts/accessibility-browser.mjs",
     "test:content": "node scripts/content-smoke.mjs"
   },
   "dependencies": {

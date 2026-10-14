@@ -13,7 +13,7 @@ Ovo je prvi pasus mog članka.
 
 Ovdje želim ubaciti fotografiju.
 
-![](/uploads/slikeBlog/screenshot-2026-10-14-175438.png)
+![slika kljuca](/uploads/slikeBlog/screenshot-2026-10-14-175438.png)
 
 Ovo je nastavak članka nakon fotografije.
 

@@ -1,1 +1,11 @@
 .venv/
+node_modules/
+dist/
+.astro/
+.npm-cache/
+.qa/
+.env
+.env.*
+!.env.example
+
+archive/

@@ -1,0 +1,13 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { articleUrl, formatDate, readingTime } from '../lib/site';
+interface Props { posts: CollectionEntry<'posts'>[]; }
+const { posts } = Astro.props;
+---
+{posts.length === 0 && <p class="empty-state">Ovdje će uskoro biti prvi tekst.</p>}
+<ol class="post-list">{posts.map((post) => <li>
+  <div class="metadata"><time datetime={post.data.date.toISOString().slice(0,10)}>{formatDate(post.data.date)}</time><span>{post.data.category}</span><span>{readingTime(post.body)} min čitanja</span></div>
+  <h3><a href={articleUrl(post)}>{post.data.title}</a></h3>
+  <p>{post.data.description}</p>
+  {post.data.tags.length > 0 && <ul class="tags" aria-label="Oznake">{post.data.tags.map((tag) => <li>#{tag}</li>)}</ul>}
+</li>)}</ol>

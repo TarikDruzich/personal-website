@@ -11,7 +11,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "verify": "node scripts/verify.mjs",
-    "test:images": "node --test scripts/media-paths.test.mjs scripts/reading-images.test.mjs",
+    "test:images": "node --test scripts/media-paths.test.mjs scripts/reading-images.test.mjs scripts/optimized-images.test.mjs",
     "test:accessibility": "node scripts/accessibility-browser.mjs",
     "test:content": "node scripts/content-smoke.mjs"
   },
@@ -19,7 +19,8 @@
     "@astrojs/markdown-remark": "7.3.2",
     "@astrojs/rss": "4.0.19",
     "@astrojs/sitemap": "3.7.4",
-    "astro": "7.3.8"
+    "astro": "7.3.8",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",

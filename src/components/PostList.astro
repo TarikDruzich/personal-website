@@ -1,13 +1,22 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { articleUrl, formatDate, readingTime } from '../lib/site';
-interface Props { posts: CollectionEntry<'posts'>[]; headingLevel?: 'h2' | 'h3'; }
-const { posts, headingLevel: Heading = 'h3' } = Astro.props;
+import { articleUrl, formatDate } from '../lib/site';
+interface Props { posts: CollectionEntry<'posts'>[]; }
+const { posts } = Astro.props;
 ---
 {posts.length === 0 && <p class="empty-state">Ovdje će uskoro biti prvi tekst.</p>}
-<ol class="post-list">{posts.map((post) => <li>
-  <div class="metadata"><time datetime={post.data.date.toISOString().slice(0,10)}>{formatDate(post.data.date)}</time><span>{post.data.category}</span><span>{readingTime(post.body)} min čitanja</span></div>
-  <Heading><a href={articleUrl(post)}>{post.data.title}</a></Heading>
-  <p>{post.data.description}</p>
-  {post.data.tags.length > 0 && <ul class="tags" aria-label="Oznake">{post.data.tags.map((tag) => <li>#{tag}</li>)}</ul>}
-</li>)}</ol>
+<ol class="editorial-list" role="list">{posts.map((post) => <li><article>
+<div class="metadata"><time datetime={post.data.date.toISOString().slice(0,10)}>{formatDate(post.data.date)}</time></div>
+<h2><a href={articleUrl(post)}>{post.data.title}</a></h2>
+<p>{post.data.description}</p>
+<a class="read-more" href={articleUrl(post)} aria-label={`Pročitaj tekst: ${post.data.title}`}>Pročitaj tekst →</a>
+</article></li>)}</ol>
+<style>
+.editorial-list { list-style:none; padding:0; margin:0 0 3rem; display:grid; gap:1.25rem; }
+.editorial-list article { border:1px solid var(--border); padding:clamp(1.25rem,4vw,2.5rem); }
+.editorial-list .metadata { justify-content:center; }
+.editorial-list h2 { text-align:center; font-size:clamp(1.65rem,1.4rem + 1vw,2.25rem); margin:.75rem 0 1rem; }
+.editorial-list h2 a { text-decoration:none; }
+.editorial-list p { margin:0 0 1rem; }
+.read-more { display:inline-flex; align-items:center; min-height:44px; color:var(--accent); font:.875rem/1.65 var(--mono); }
+</style>

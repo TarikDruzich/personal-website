@@ -31,10 +31,10 @@ test('build-time dimensions reserve local image space without changing URLs or a
 `);
       const tags = [...code.matchAll(/<img\b[^>]*>/g)].map(([tag]) => tag);
       assert.equal(tags.length, 4);
-      for (const tag of tags.slice(0, 2)) {
+      for (const [index, tag] of tags.slice(0, 2).entries()) {
         assert(tag.includes('width="1200"') && tag.includes('height="700"'));
         assert(tag.includes(`src="${prefix}/uploads/landscape.svg"`));
-        assert(tag.includes('loading="lazy"') && tag.includes('decoding="async"'));
+        assert(tag.includes(`loading="${index === 0 ? 'eager' : 'lazy'}"`) && tag.includes('decoding="async"'));
       }
       assert(tags[2].includes('width="600"') && tags[2].includes('height="350"'));
       assert(!tags[3].includes('width=') && tags[3].includes('https://example.com/image.png'));

@@ -1,0 +1,12 @@
+---
+import WritingArchive from '../../../components/WritingArchive.astro';
+import { publishedPosts } from '../../../lib/site';
+import { pageSize } from '../../../lib/pagination';
+export async function getStaticPaths() {
+ const posts = await publishedPosts();
+ const total = Math.ceil(posts.length / pageSize);
+ return Array.from({length:Math.max(0,total-1)}, (_,i) => ({params:{page:String(i+2)},props:{posts:posts.slice((i+1)*pageSize,(i+2)*pageSize),current:i+2,total}}));
+}
+const { posts, current, total } = Astro.props;
+---
+<WritingArchive home={false} posts={posts} current={current} total={total} />

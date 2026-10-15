@@ -41,7 +41,18 @@ for (const file of output.filter((path) => path.endsWith('.html'))) {
     if (statSync(local).isDirectory()) assert(existsSync(join(local, 'index.html')), `Missing page for ${value}`);
     checkedLinks++;
   }
-  for (const img of html.matchAll(/<img\b[^>]*>/g)) assert(/\balt="[^"\s][^"]*"/.test(img[0]), `Image needs descriptive alt text: ${file}`);
+  for (const img of html.matchAll(/<img\b[^>]*>/g)) {
+    assert(/\balt="[^"\s][^"]*"/.test(img[0]), `Image needs descriptive alt text: ${file}`);
+    const srcset = img[0].match(/\bsrcset="([^"]+)"/)?.[1];
+    if (srcset?.includes('/_optimized/')) {
+      assert(/\bwidth="\d+"/.test(img[0]) && /\bheight="\d+"/.test(img[0]) && /\bsizes="/.test(img[0]), `Responsive image lacks dimensions/sizes: ${file}`);
+      for (const candidate of srcset.split(',')) {
+        const [src, width] = candidate.trim().split(/\s+/);
+        assert(/^\d+w$/.test(width), `Invalid responsive descriptor: ${candidate}`);
+        assert(existsSync(join(root, decodeURIComponent(src.slice(base.length)))), `Missing responsive image: ${src}`);
+      }
+    }
+  }
 }
 const rss = readFileSync(join(root, 'rss.xml'), 'utf8');
 assert(rss.includes('<rss') && rss.includes('<language>bs</language>'), 'RSS missing or invalid language');

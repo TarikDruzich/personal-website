@@ -22,6 +22,7 @@ function build() {
 const delay = (ms) => new Promise((done) => setTimeout(done, ms));
 let browser, server, socket;
 const results = [];
+const baseline = process.env.QA_BASELINE_DIR ? resolve(process.env.QA_BASELINE_DIR) : undefined;
 const base = (process.env.BASE_PATH ?? '/').replace(/\/$/, '');
 
 // Evaluated inside Chrome: actual geometry, rendered colors, images, and semantics.
@@ -65,7 +66,7 @@ function measure() {
     paddingLeft: parseFloat(style.paddingLeft), paddingRight: parseFloat(style.paddingRight),
     bodySize: parseFloat(getComputedStyle(document.body).fontSize), lineHeight: getComputedStyle(document.querySelector('.prose') || document.body).lineHeight,
     headings: [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map((element) => ({ level: Number(element.tagName[1]), text: element.textContent.trim(), ...rect(element) })),
-    images: [...document.images].map((image) => ({ alt: image.alt, loaded: image.complete && image.naturalWidth > 0, naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight, reservedWidth: image.getAttribute('width'), reservedHeight: image.getAttribute('height'), ...rect(image) })),
+    images: [...document.images].map((image) => ({ alt: image.alt, currentSrc: image.currentSrc, loaded: image.complete && image.naturalWidth > 0, naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight, reservedWidth: image.getAttribute('width'), reservedHeight: image.getAttribute('height'), ...rect(image) })),
     targets: [...document.querySelectorAll('.site-header a,.site-footer a')].map((element) => ({ text: element.textContent, ...rect(element) })),
     metadataSize: [...document.querySelectorAll('.metadata,figcaption')].map((element) => parseFloat(getComputedStyle(element).fontSize)),
     unnamedLinks: [...document.querySelectorAll('a')].filter((element) => !(element.getAttribute('aria-label') || element.textContent.trim() || element.querySelector('img[alt]'))).length,
@@ -152,8 +153,10 @@ console.log(example);
     if (base && !path.startsWith(`${base}/`)) { response.writeHead(404).end(); return; }
     path = path.slice(base.length);
     if (path.endsWith('/')) path += 'index.html';
-    const file = resolve(dist, `.${path}`);
-    if (!file.startsWith(`${dist}/`) && !file.startsWith(`${dist}\\`)) { response.writeHead(403).end(); return; }
+    const directory = baseline && path.startsWith('/__baseline/') ? baseline : dist;
+    if (directory === baseline) path = path.slice('/__baseline'.length);
+    const file = resolve(directory, `.${path}`);
+    if (!file.startsWith(`${directory}/`) && !file.startsWith(`${directory}\\`)) { response.writeHead(403).end(); return; }
     if (!existsSync(file)) { response.writeHead(404).end(); return; }
     response.setHeader('Content-Type', ({ '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.svg': 'image/svg+xml' })[extname(file)] || 'application/octet-stream');
     response.end(readFileSync(file));
@@ -197,7 +200,7 @@ console.log(example);
     assert.equal(await evaluate('document.readyState'), 'complete', 'Page did not finish loading');
     await evaluate(`Promise.all([...document.images].map(image => { image.loading = 'eager'; return image.decode().catch(() => {}); }))`);
   };
-  const routes = ['', 'writing/', 'writing/qa-reading-accessibility/', '404.html'];
+  const routes = ['', 'writing/', 'writing/qa-reading-accessibility/', 'writing/testni-tekst/', '404.html'];
   for (const width of [320, 375, 430, 768, 1024, 1440, 1920]) {
     await cdp('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     for (const path of routes) {
@@ -252,6 +255,33 @@ console.log(example);
   assert(tree.nodes.some((node) => !node.ignored && node.role?.value === 'region' && node.name?.value === 'Blok koda'), 'Named code region missing');
   await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   assert.equal(await evaluate('getComputedStyle(document.documentElement).scrollBehavior'), 'auto');
+  if (baseline) {
+    const comparison = [];
+    const readingGeometry = () => [...document.querySelectorAll('.site-header,.article-heading,.prose,.cover,.prose p,.prose img,.cover img,figcaption,.site-footer')].map(element => {
+      const style = getComputedStyle(element);
+      const {x,y,width,height} = element.getBoundingClientRect();
+      return {tag:element.tagName, x,y,width,height, font:style.fontFamily, size:style.fontSize, lineHeight:style.lineHeight, margin:style.margin, color:style.color};
+    });
+    for (const width of [320,375,430,768,1024,1440,1920]) {
+      await cdp('Emulation.setDeviceMetricsOverride', { width, height:1000, deviceScaleFactor:1, mobile:false });
+      await navigate('__baseline/writing/testni-tekst/');
+      const before = await evaluate(`(${readingGeometry.toString()})()`);
+      const originalNavigation = await evaluate(`!!document.querySelector('.article-navigation')`);
+      const oldShot = await cdp('Page.captureScreenshot', {format:'png',captureBeyondViewport:true});
+      writeFileSync(join(qa, `article-before-${width}.png`), Buffer.from(oldShot.data,'base64'));
+      await navigate('writing/testni-tekst/');
+      // The temporary accessibility fixture creates a newer-post link that did
+      // not exist in the baseline. Remove only that fixture-induced navigation.
+      if (!originalNavigation) await evaluate(`document.querySelector('.article-navigation')?.remove()`);
+      const after = await evaluate(`(${readingGeometry.toString()})()`);
+      assert.deepEqual(after, before, `Article reading design changed at ${width}px`);
+      const newShot = await cdp('Page.captureScreenshot', {format:'png',captureBeyondViewport:true});
+      writeFileSync(join(qa, `article-after-${width}.png`), Buffer.from(newShot.data,'base64'));
+      comparison.push({width, identicalGeometryAndTypography:true, images:(await evaluate(`(${measure.toString()})()`)).images});
+    }
+    writeFileSync(join(qa,'article-comparison.json'),JSON.stringify(comparison,null,2));
+    console.log('Article geometry, typography, spacing and colors match the pre-change build at all seven widths.');
+  }
   writeFileSync(join(qa, 'reading-accessibility-results.json'), JSON.stringify(results, null, 2));
   console.log(`Passed ${results.length} layout/contrast checks, keyboard skip links, scrollable code, accessibility landmarks, images, and reduced-motion checks.`);
   await command('Browser.close');

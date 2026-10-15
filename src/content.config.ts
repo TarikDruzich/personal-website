@@ -5,7 +5,15 @@ const optionalText = () => z.preprocess((value) => value === '' || value === nul
 const optionalDate = () => z.preprocess((value) => value === '' || value === null ? undefined : value, z.coerce.date().optional());
 
 const posts = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
+  // Uploaded files can change without Markdown changing. Re-render on each sync
+  // so cached HTML never keeps an obsolete image hash or missing variants.
+  loader: {
+    name: 'posts-with-uploaded-images',
+    async load(context) {
+      context.store.clear();
+      await glob({ pattern: '**/*.md', base: './src/content/posts' }).load(context);
+    },
+  },
   schema: z.object({
     title: z.string().min(1), description: z.string().min(1),
     date: z.preprocess((value) => value === '' || value === null ? undefined : value, z.coerce.date()),

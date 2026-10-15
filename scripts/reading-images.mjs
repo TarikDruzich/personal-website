@@ -2,8 +2,8 @@ import { readFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
 import { imageMetadata } from 'astro/assets/utils';
 import { mediaUrl } from './media-url.mjs';
+import { optimizedImage } from './optimized-images.mjs';
 
-// Public uploads remain unchanged; only generated HTML receives intrinsic dimensions.
 export async function localImageDimensions(src, base = '/', publicDir = 'public') {
   src = mediaUrl(src, base);
   if (typeof src !== 'string' || !src.startsWith('/') || src.startsWith('//')) return undefined;
@@ -17,47 +17,64 @@ export async function localImageDimensions(src, base = '/', publicDir = 'public'
     if (!file.startsWith(`${root}${sep}`)) return undefined;
     const { width, height } = await imageMetadata(await readFile(file), file);
     return { width, height };
-  } catch {
-    // Unknown formats and missing files remain subject to generated-output verification.
-    return undefined;
-  }
+  } catch { return undefined; }
 }
 
 export function readingImages({ base = '/', publicDir = 'public' } = {}) {
   return async (tree) => {
-    const pending = [];
-    const cache = new Map();
-    const dimensions = (src) => {
-      if (!cache.has(src)) cache.set(src, localImageDimensions(src, base, publicDir));
-      return cache.get(src);
-    };
-    const attribute = (tag, name) => tag.match(new RegExp(`\\s${name}\\s*=\\s*(["'])(.*?)\\1`, 'i'))?.[2];
-    async function rawImages(value) {
-      const matches = [...value.matchAll(/<img\b(?:[^"'<>]|"[^"]*"|'[^']*')*>/gi)];
-      // Work backwards to keep offsets stable as attributes are added.
-      for (const match of matches.reverse()) {
-        const tag = match[0];
-        let additions = '';
-        if (!/\s(?:width|height)\s*=/i.test(tag)) {
-          const size = await dimensions(attribute(tag, 'src'));
-          if (size) additions += ` width="${size.width}" height="${size.height}"`;
-        }
-        if (!/\sloading\s*=/i.test(tag)) additions += ' loading="lazy"';
-        if (!/\sdecoding\s*=/i.test(tag)) additions += ' decoding="async"';
-        const updated = tag.replace(/\s*\/?\s*>$/, (ending) => additions + ending);
-        value = value.slice(0, match.index) + updated + value.slice(match.index + tag.length);
+    let seenImage = false;
+    // Conservatively eager-load an image in the opening two blocks, including
+    // a raw HTML figure. Everything farther into the article remains lazy.
+    const opening = new Set(tree.children?.filter(n => n.type !== 'text' || n.value.trim()).slice(0, 2));
+    async function properties(props, nearTop) {
+      const authoredWidth = props.width;
+      const src = props.src;
+      const size = await localImageDimensions(src, base, publicDir);
+      if (!props.width && !props.height && size) Object.assign(props, size);
+      else if (size && props.width && !props.height) props.height = Math.round(Number(props.width) * size.height / size.width);
+      else if (size && props.height && !props.width) props.width = Math.round(Number(props.height) * size.width / size.height);
+      const image = !props.srcSet && !props.sizes && await optimizedImage(src, base, publicDir);
+      if (image) {
+        props.src = image.src;
+        props.srcSet = image.srcset;
+        props.sizes = authoredWidth ? `min(${Number(authoredWidth)}px, 70ch, calc(100vw - clamp(32px, 8vw, 64px)))` : image.sizes;
+        if (props.width && props.height && !/aspect-ratio\s*:/.test(props.style ?? '')) props.style = `${props.style ?? ''};aspect-ratio:${props.width} / ${props.height}`;
       }
+      if (!seenImage && nearTop && (!props.loading || props.loading === 'lazy')) props.loading = 'eager';
+      else props.loading ??= 'lazy';
+      props.decoding ??= 'async';
+      seenImage = true;
+    }
+    const attribute = (tag, name) => tag.match(new RegExp(`\\s${name}\\s*=\\s*(["'])(.*?)\\1`, 'i'))?.[2];
+    const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
+    async function rawImages(value, nearTop) {
+      const matches = [...value.matchAll(/<img\b(?:[^"'<>]|"[^"]*"|'[^']*')*>/gi)];
+      const replacements = [];
+      for (const match of matches) {
+        const tag = match[0];
+        const props = {};
+        for (const name of ['src', 'width', 'height', 'loading', 'decoding', 'sizes', 'style']) props[name] = attribute(tag, name);
+        props.srcSet = attribute(tag, 'srcset');
+        const original = { ...props };
+        await properties(props, nearTop);
+        let updated = tag;
+        for (const [key, value] of Object.entries(props)) {
+          if (value === undefined || value === original[key]) continue;
+          const name = key === 'srcSet' ? 'srcset' : key;
+          const pattern = new RegExp(`(\\s${name}\\s*=\\s*)(["']).*?\\2`, 'i');
+          if (pattern.test(updated)) updated = updated.replace(pattern, () => ` ${name}="${escape(value)}"`);
+          else updated = updated.replace(/\s*\/?\s*>$/, ending => ` ${name}="${escape(value)}"${ending}`);
+        }
+        replacements.push({ match, updated });
+      }
+      for (const {match, updated} of replacements.reverse()) value = value.slice(0, match.index) + updated + value.slice(match.index + match[0].length);
       return value;
     }
-    function visit(node) {
-      if (node.type === 'element' && node.tagName === 'img') {
-        const props = node.properties;
-        if (!props.width && !props.height) pending.push(dimensions(props.src).then((size) => { if (size) Object.assign(props, size); }));
-      }
-      if (node.type === 'raw') pending.push(rawImages(node.value).then((value) => { node.value = value; }));
-      node.children?.forEach(visit);
+    async function visit(node, nearTop = false) {
+      if (node.type === 'element' && node.tagName === 'img') await properties(node.properties, nearTop);
+      if (node.type === 'raw') node.value = await rawImages(node.value, nearTop);
+      for (const child of node.children ?? []) await visit(child, nearTop || opening.has(child));
     }
-    visit(tree);
-    await Promise.all(pending);
+    await visit(tree);
   };
 }

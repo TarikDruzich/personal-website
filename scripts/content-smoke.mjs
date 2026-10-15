@@ -9,7 +9,8 @@ const published = 'src/content/posts/qa-publishing-fixture.md';
 const draft = 'src/content/posts/qa-draft-fixture.md';
 const implicit = 'src/content/posts/qa-default-draft.md';
 const emptyFields = 'src/content/posts/qa-empty-fields.md';
-for (const path of [published, draft, implicit, emptyFields]) assert(!existsSync(path), `Refusing to overwrite ${path}`);
+const archiveFixtures = Array.from({ length: 13 }, (_, i) => `src/content/posts/qa-archive-${i}.md`);
+for (const path of [published, draft, implicit, emptyFields, ...archiveFixtures]) assert(!existsSync(path), `Refusing to overwrite ${path}`);
 const content = (title, flag) => `---\ntitle: "${title}"\ndescription: "Privremeni tekst za provjeru objave."\ndate: "2026-10-14"\ncategory: "QA"\ntags: [rust, linux]\n${flag}\ncover: "/uploads/qa-fixture.svg"\ncoverAlt: "Postojeća slika iz arhiva bloga"\ncoverCaption: "Potpis testne slike"\nupdated: "2026-10-14"\n---\n\n## Provjera sadržaja\n\n> Citirani tekst.\n\n\`\`\`rust\nfn main() { println!("Hello"); }\n\`\`\`\n\nTekst prije slike.\n\n![Prva inline slika](/uploads/qa-fixture.svg)\n\nTekst između slika.\n\n![Druga inline slika](/uploads/qa-fixture.svg)\n\n[Preuzmi sliku](/uploads/qa-fixture.svg)\n\n<figure><img src="/uploads/qa-fixture.svg" alt="Postojeća slika u tekstu" /><figcaption>Potpis u tekstu</figcaption></figure>\n`;
 function run(script, args = []) {
   const result = spawnSync(process.execPath, [script, ...args], { stdio: 'inherit', windowsHide: true });
@@ -35,8 +36,20 @@ try {
   run(astroCli, ['build']);
   run('scripts/verify.mjs');
   assert(!existsSync('dist/writing/qa-publishing-fixture'), 'Unpublished article must disappear');
+  for (const [i, path] of archiveFixtures.entries()) writeFileSync(path, `---\ntitle: "QA archive ${i}"\ndescription: "Full archive description ${i}"\ndate: "2099-01-${String(i + 1).padStart(2, '0')}"\ndraft: false\n---\nArchive fixture.\n`, { flag: 'wx' });
+  run(astroCli, ['build']);
+  run('scripts/verify.mjs');
+  for (const prefix of ['', 'writing/']) {
+    const first = readFileSync(`dist/${prefix}index.html`, 'utf8');
+    const second = readFileSync(`dist/${prefix}page/2/index.html`, 'utf8');
+    assert.equal([...first.matchAll(/class="read-more"/g)].length, 12, 'Expected 12 entries on first archive page');
+    assert(first.includes('QA archive 12') && !first.includes('QA archive 0<'), 'Newest entries must come first');
+    assert(second.includes('QA archive 0') && !second.includes('QA archive 12'), 'Older entries must remain reachable');
+    assert(first.includes(`${base}/${prefix}page/2/`) && second.includes(`href="${base}/${prefix}"`), 'Pagination links must be base-aware and bidirectional');
+    assert(!/<img\b/.test(first + second), 'Archive entries must not contain cover images');
+  }
   console.log('Verified code highlighting, captions, images, tags, updated metadata, explicit/default drafts, and publish-to-draft removal.');
 } finally {
-  for (const path of [published, draft, implicit, emptyFields, image]) if (existsSync(path)) unlinkSync(path);
+  for (const path of [published, draft, implicit, emptyFields, image, ...archiveFixtures]) if (existsSync(path)) unlinkSync(path);
   run(astroCli, ['build']);
 }

@@ -5,7 +5,7 @@ description: Vaznost kreiranja, kreacije, Omarchy, Open Source Software, Codex, 
 category: Bilješke
 tags:
   - Ne znam
-draft: true
+draft: false
 updated: 2026-10-16
 cover: /uploads/screenshot-2026-10-15-232726.png
 coverAlt: avion leti gore
@@ -57,13 +57,12 @@ Moj Cliamp setup, sa klasicnim Tokyo Night Wallpaperom, slusam Lilihip zadnjih p
 ![substack](https://substackcdn.com/image/fetch/$s_!qetZ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc22b1561-8a3a-4330-86b0-8e9972e1f391_1920x945.png)
 
 Evo procesa pisanja ovoga, meni izgleda dobro hahaha.   
-  
+
 Tako da DHH je odradio odlican posao, jer sam na Omarchy-u dobio sve ono sto je neophodno za development.
 
 Takodjer slazem se sto se tice RUST-a, RUST mi je najkompletniji i najkvalitetniji kada programiram sada, i optimizovan je max, ne znam zasto to ljudi na X community-u ne zele da prihvate.
 
 Rust je sadasnjost, Rust je buducnost.   
-
 
 Kontam vremenom ce doci do nekog unificiranog jezika koji ce moci da kreira sve i da cemo svi pricati na engleskom hahahaaha.
 

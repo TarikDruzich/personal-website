@@ -72,3 +72,4 @@ Malo morgen dok pisem sta istrazim tako ce biti
 
 CCoontam pisati cetvrtkom i nedeljom.
 
+[https://www.youtube.com/watch?v=egY47u10_Uo&list=RDP0zNVA0p56I&index=7](https://www.youtube.com/watch?v=egY47u10_Uo&list=RDP0zNVA0p56I&index=7)

@@ -3,8 +3,9 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { createServer } from 'node:http';
-import { existsSync, readFileSync, writeFileSync, unlinkSync, mkdirSync, mkdtempSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, unlinkSync, mkdirSync, mkdtempSync, readdirSync } from 'node:fs';
 import { resolve, join, extname } from 'node:path';
+import sharp from 'sharp';
 
 const chrome = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 assert(existsSync(chrome), 'Set CHROME_PATH to an installed Chrome/Chromium executable.');
@@ -12,8 +13,9 @@ const qa = resolve('.qa');
 mkdirSync(qa, { recursive: true });
 const profile = mkdtempSync(join(qa, 'reading-chrome-'));
 const fixture = 'src/content/posts/qa-reading-accessibility.md';
-const images = ['public/uploads/qa-reading-landscape.svg', 'public/uploads/qa-reading-portrait.svg'];
-for (const path of [fixture, ...images]) assert(!existsSync(path), `Refusing to overwrite ${path}`);
+const shortFixture = 'src/content/posts/qa-reading-cover.md';
+const images = ['public/uploads/qa-reading-landscape.svg', 'public/uploads/qa-reading-portrait.svg', 'public/uploads/qa-reading-cover.png'];
+for (const path of [fixture, shortFixture, ...images]) assert(!existsSync(path), `Refusing to overwrite ${path}`);
 const astro = resolve('node_modules/astro', JSON.parse(readFileSync('node_modules/astro/package.json', 'utf8')).bin.astro);
 function build() {
   const result = spawnSync(process.execPath, [astro, 'build'], { stdio: 'inherit', windowsHide: true });
@@ -26,7 +28,17 @@ const baseline = process.env.QA_BASELINE_DIR ? resolve(process.env.QA_BASELINE_D
 const base = (process.env.BASE_PATH ?? '/').replace(/\/$/, '');
 
 // Evaluated inside Chrome: actual geometry, rendered colors, images, and semantics.
-function measure() {
+function measure(kind = 'article') {
+  const required = (selector) => {
+    const element = document.querySelector(selector);
+    if (!(element instanceof Element)) throw new Error(`Missing required element ${selector} on ${location.href} (${document.readyState})`);
+    return element;
+  };
+  const body = required('body');
+  const shell = required('.shell');
+  const main = required('main#content');
+  const reading = kind === 'listing' ? required('.editorial-list') : kind === 'article' ? required('.prose') : main;
+  if (kind === 'listing') required('.archive-heading h1');
   const rect = (element) => {
     const { x, y, width, height } = element.getBoundingClientRect();
     return { x, y, width, height };
@@ -57,18 +69,23 @@ function measure() {
     const size = parseFloat(style.fontSize);
     colors.push({ text: walker.currentNode.textContent.trim().slice(0, 60), ratio: contrast(style.color, background(element)), required: size >= 24 || (size >= 18.66 && Number(style.fontWeight) >= 700) ? 3 : 4.5 });
   }
-  const shell = document.querySelector('.shell');
   const style = getComputedStyle(shell);
-  const main = document.querySelector('main');
   return {
     width: innerWidth, layoutWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth,
     shell: rect(shell), content: rect(main), textAlign: getComputedStyle(document.body).textAlign,
     paddingLeft: parseFloat(style.paddingLeft), paddingRight: parseFloat(style.paddingRight),
-    bodySize: parseFloat(getComputedStyle(document.body).fontSize), lineHeight: getComputedStyle(document.querySelector('.prose') || document.body).lineHeight,
+    bodySize: parseFloat(getComputedStyle(body).fontSize), lineHeight: parseFloat(getComputedStyle(reading).lineHeight),
+    rootScale: parseFloat(getComputedStyle(document.documentElement).fontSize) / 16,
+    textSizes: [...reading.querySelectorAll('p:not(.eyebrow):not(.metadata)')].map(element => parseFloat(getComputedStyle(element).fontSize)),
+    cards: kind === 'listing' ? [...reading.querySelectorAll('li > article')].map(article => ({
+      title: !!article.querySelector('h2 a[href]')?.textContent.trim(),
+      description: !!article.querySelector('p')?.textContent.trim(),
+      link: !!article.querySelector('a.read-more[href][aria-label]'),
+    })) : undefined,
     headings: [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map((element) => ({ level: Number(element.tagName[1]), text: element.textContent.trim(), ...rect(element) })),
     images: [...document.images].map((image) => ({ alt: image.alt, currentSrc: image.currentSrc, loaded: image.complete && image.naturalWidth > 0, naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight, reservedWidth: image.getAttribute('width'), reservedHeight: image.getAttribute('height'), ...rect(image) })),
-    targets: [...document.querySelectorAll('.site-header a,.site-footer a')].map((element) => ({ text: element.textContent, ...rect(element) })),
-    metadataSize: [...document.querySelectorAll('.metadata,figcaption')].map((element) => parseFloat(getComputedStyle(element).fontSize)),
+    targets: [...document.querySelectorAll('.site-header a,.site-footer a,.read-more,.pagination a')].map((element) => ({ text: element.textContent, ...rect(element) })),
+    metadataSize: [...document.querySelectorAll('.metadata,.eyebrow,figcaption')].map((element) => parseFloat(getComputedStyle(element).fontSize)),
     unnamedLinks: [...document.querySelectorAll('a')].filter((element) => !(element.getAttribute('aria-label') || element.textContent.trim() || element.querySelector('img[alt]'))).length,
     lang: document.documentElement.lang, scripts: document.scripts.length,
     contrasts: colors, forms: document.querySelectorAll('input,select,textarea,button').length,
@@ -76,7 +93,15 @@ function measure() {
 }
 
 function check(metrics, label) {
-  assert(metrics.scrollWidth <= metrics.width + 1, `Page overflow: ${label}`);
+  assert(metrics.scrollWidth <= metrics.layoutWidth + 1, `Page overflow: ${label}`);
+  assert(metrics.bodySize >= (metrics.width <= 600 ? 17 : 18) * metrics.rootScale, `Small body text: ${label}`);
+  assert(metrics.lineHeight >= metrics.bodySize * 1.5, `Tight reading line height: ${label}`);
+  assert(metrics.textSizes.length > 0, `No paragraph text measured: ${label}`);
+  for (const size of metrics.textSizes) assert(size >= metrics.bodySize, `Small paragraph text: ${label}`);
+  if (metrics.cards) {
+    assert(metrics.cards.length > 0, `Missing editorial cards for published fixtures: ${label}`);
+    for (const card of metrics.cards) assert(card.title && card.description && card.link, `Incomplete editorial card: ${label}`);
+  }
   assert(Math.abs(metrics.shell.x * 2 + metrics.shell.width - metrics.layoutWidth) < 2, `Column not centered: ${label}`);
   assert.equal(metrics.paddingLeft, metrics.paddingRight);
   assert.equal(metrics.textAlign, 'left');
@@ -98,17 +123,22 @@ function check(metrics, label) {
     assert(Math.abs(image.width / image.height - image.naturalWidth / image.naturalHeight) < .02, `Image distorted: ${label}`);
   }
   for (const target of metrics.targets) assert(target.height >= 43.99 && target.width >= 24, `Small navigation target: ${label}: ${JSON.stringify(target)}`);
-  for (const size of metrics.metadataSize) assert(size >= 14, `Small metadata: ${label}`);
+  for (const size of metrics.metadataSize) assert(size >= 14 * metrics.rootScale, `Small metadata: ${label}`);
+  assert(metrics.contrasts.length > 0, `No text contrast measured: ${label}`);
   for (const color of metrics.contrasts) assert(color.ratio >= color.required, `Contrast ${color.ratio.toFixed(2)}: ${color.text} (${label})`);
   results.push({ label, ...metrics });
 }
 
 try {
   mkdirSync('public/uploads', { recursive: true });
-  for (const [index, path] of images.entries()) {
+  for (const [index, path] of images.slice(0, 2).entries()) {
     const [width, height] = index ? [300, 500] : [1200, 700];
     writeFileSync(path, `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}" fill="#f2d46b"/></svg>`, { flag: 'wx' });
   }
+  writeFileSync(images[2], await sharp({ create: { width: 900, height: 600, channels: 3, background: '#f2d46b' } }).png().toBuffer(), { flag: 'wx' });
+  // Keep the cover/short-article case independent of articles that CMS users
+  // can rename, unpublish or remove. The long fixture covers body features.
+  writeFileSync(shortFixture, `---\ntitle: "QA cover and short article"\ndescription: "Short article layout fixture."\ndate: "2026-10-14"\ndraft: false\ncover: "/uploads/qa-reading-cover.png"\ncoverAlt: "Landscape cover fixture"\ncoverCaption: "Cover caption fixture"\n---\nShort article paragraph for reading and mobile layout checks.\n`, { flag: 'wx' });
   writeFileSync(fixture, `---
 title: "Provjera čitljivosti: č, ć, đ, š, ž"
 description: "Privremeni tekst za provjeru prikaza i pristupačnosti."
@@ -192,20 +222,42 @@ console.log(example);
   };
   await cdp('Page.enable');
   const navigate = async (path) => {
-    await cdp('Page.navigate', { url: `${origin}${base}/${path}` });
+    const url = `${origin}${base}/${path}`;
+    const response = await fetch(url);
+    await response.arrayBuffer();
+    assert.equal(response.status, 200, `Expected a built HTML page, got HTTP ${response.status}: ${url}`);
+    assert(response.headers.get('content-type')?.includes('text/html'), `Not an HTML page: ${url}`);
+    const navigation = await cdp('Page.navigate', { url });
+    assert(!navigation.errorText, `Navigation failed: ${url}: ${navigation.errorText}`);
     for (let i = 0; i < 100; i++) {
       await delay(50);
       if (await evaluate(`document.readyState === 'complete' && location.pathname === ${JSON.stringify(`${base}/${path}`)}`)) break;
     }
-    assert.equal(await evaluate('document.readyState'), 'complete', 'Page did not finish loading');
+    assert.equal(await evaluate('location.href'), url, `Navigation did not reach ${url}`);
+    assert.equal(await evaluate('document.readyState'), 'complete', `Page did not finish loading: ${url}`);
+    assert(await evaluate(`!!document.querySelector('.shell main#content')`), `Required layout missing on ${url}`);
     await evaluate(`Promise.all([...document.images].map(image => { image.loading = 'eager'; return image.decode().catch(() => {}); }))`);
   };
-  const routes = ['', 'writing/', 'writing/qa-reading-accessibility/', 'writing/testni-tekst/', '404.html'];
+  const routes = ['', 'writing/', 'writing/qa-reading-accessibility/', 'writing/qa-reading-cover/', '404.html'];
+  const pageKind = path => ['', 'writing/'].includes(path) ? 'listing' : path === '404.html' ? 'error' : 'article';
+  const metricsFor = path => evaluate(`(${measure.toString()})(${JSON.stringify(pageKind(path))})`);
+  // Regression checks: a missing route or required selector must fail with a
+  // useful diagnostic, rather than pass via a body fallback or throw a TypeError.
+  await assert.rejects(navigate('qa-accessibility-missing-page/'), /got HTTP 404/);
+  await navigate('');
+  const missingShell = await evaluate(`(() => {
+    const shell = document.querySelector('.shell');
+    shell.remove();
+    try { (${measure.toString()})('listing'); return ''; }
+    catch (error) { return error.message; }
+    finally { document.body.append(shell); }
+  })()`);
+  assert(missingShell.includes('Missing required element .shell'), 'Missing layout must have a clear diagnostic');
   for (const width of [320, 375, 430, 768, 1024, 1440, 1920]) {
     await cdp('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     for (const path of routes) {
       await navigate(path);
-      const metrics = await evaluate(`(${measure.toString()})()`);
+      const metrics = await metricsFor(path);
       check(metrics, `${path || 'home'} at ${width}px`);
       if (width >= 768) assert(metrics.content.width <= metrics.bodySize * 42, 'Excessive reading width');
       if ([375, 1440].includes(width) && ['', 'writing/qa-reading-accessibility/'].includes(path)) {
@@ -226,7 +278,7 @@ console.log(example);
     for (const path of routes) {
       await navigate(path);
       await evaluate(`document.documentElement.style.fontSize = '200%'`);
-      check(await evaluate(`(${measure.toString()})()`), `${path || 'home'} at ${width}px, text 200%`);
+      check(await metricsFor(path), `${path || 'home'} at ${width}px, text 200%`);
     }
   }
   await cdp('Emulation.setDeviceMetricsOverride', { width: 320, height: 1000, deviceScaleFactor: 1, mobile: false });
@@ -256,6 +308,16 @@ console.log(example);
   await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   assert.equal(await evaluate('getComputedStyle(document.documentElement).scrollBehavior'), 'auto');
   if (baseline) {
+    // Compare an article present in both builds; a CMS draft must not leave
+    // this optional comparison pointing at a stale hard-coded slug either.
+    const articleRoutes = (directory, prefix = '') => readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) return articleRoutes(path, `${prefix}${entry.name}/`);
+      return entry.name === 'index.html' && /class="prose"/.test(readFileSync(path, 'utf8')) ? [prefix] : [];
+    });
+    const previousArticles = new Set(articleRoutes(baseline));
+    const comparisonPath = articleRoutes(dist).find(path => previousArticles.has(path) && !path.includes('/qa-reading-'));
+    assert(comparisonPath, 'No published article exists in both current and baseline builds; refresh QA_BASELINE_DIR.');
     const comparison = [];
     const readingGeometry = () => [...document.querySelectorAll('.site-header,.article-heading,.prose,.cover,.prose p,.prose img,.cover img,figcaption,.site-footer')].map(element => {
       const style = getComputedStyle(element);
@@ -264,12 +326,12 @@ console.log(example);
     });
     for (const width of [320,375,430,768,1024,1440,1920]) {
       await cdp('Emulation.setDeviceMetricsOverride', { width, height:1000, deviceScaleFactor:1, mobile:false });
-      await navigate('__baseline/writing/testni-tekst/');
+      await navigate(`__baseline/${comparisonPath}`);
       const before = await evaluate(`(${readingGeometry.toString()})()`);
       const originalNavigation = await evaluate(`!!document.querySelector('.article-navigation')`);
       const oldShot = await cdp('Page.captureScreenshot', {format:'png',captureBeyondViewport:true});
       writeFileSync(join(qa, `article-before-${width}.png`), Buffer.from(oldShot.data,'base64'));
-      await navigate('writing/testni-tekst/');
+      await navigate(comparisonPath);
       // The temporary accessibility fixture creates a newer-post link that did
       // not exist in the baseline. Remove only that fixture-induced navigation.
       if (!originalNavigation) await evaluate(`document.querySelector('.article-navigation')?.remove()`);
@@ -295,6 +357,6 @@ console.log(example);
     server.closeAllConnections();
     server.close();
   }
-  for (const path of [fixture, ...images]) if (existsSync(path)) unlinkSync(path);
+  for (const path of [fixture, shortFixture, ...images]) if (existsSync(path)) unlinkSync(path);
   build();
 }

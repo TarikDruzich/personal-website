@@ -14,6 +14,8 @@ for (const route of ['index.html', 'writing/index.html', '404.html', 'rss.xml', 
 let checkedLinks = 0;
 for (const file of output.filter((path) => path.endsWith('.html'))) {
   const html = readFileSync(file, 'utf8');
+  assert.equal([...html.matchAll(/src="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-4SXX4F51YF"/g)].length, 1, `Missing or duplicate GA4 loader: ${file}`);
+  assert(!/analytics-consent|privacy-settings|consent-actions|Postavke privatnosti/.test(html), `Consent UI leaked: ${file}`);
   assert(html.includes('lang="bs"'), `Missing Bosnian language: ${file}`);
   assert(/<title>[^<]+<\/title>/.test(html), `Missing title: ${file}`);
   assert(/rel="canonical"/.test(html), `Missing canonical: ${file}`);

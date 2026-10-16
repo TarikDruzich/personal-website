@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import AnalyticsConsent from '../components/AnalyticsConsent.astro';
+import Analytics from '../components/Analytics.astro';
 import { site, url } from '../lib/site';
 interface Props { title?: string; description?: string; image?: string; imageAlt?: string; article?: boolean; published?: string; updated?: string; canonicalPath?: string; noindex?: boolean; }
 const { title, description = site.description, image, imageAlt, article = false, published, updated, canonicalPath, noindex = false } = Astro.props;
@@ -13,6 +13,7 @@ const links = [{ path: '', label: 'Početna' }, { path: 'writing/', label: 'Teks
 <html lang="bs">
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Analytics />
     <title>{pageTitle}</title><meta name="description" content={description} />
     <meta name="theme-color" content="#17191b" /><meta name="author" content={site.name} />
     <link rel="canonical" href={canonical} />
@@ -35,8 +36,7 @@ const links = [{ path: '', label: 'Početna' }, { path: 'writing/', label: 'Teks
         <nav aria-label="Glavna navigacija">{links.map(({path, label}) => <a href={url(path)} aria-current={(path ? Astro.url.pathname.startsWith(url(path)) : Astro.url.pathname === url()) ? 'page' : undefined}>{label}</a>)}</nav>
       </header>
       <main id="content" tabindex="-1"><slot /></main>
-      <footer class="site-footer"><span>{site.name}</span><a href={url('rss.xml')}>RSS</a><a href={url('politika-privatnosti/')}>Politika privatnosti</a><button type="button" id="privacy-settings" hidden>Postavke privatnosti</button></footer>
+      <footer class="site-footer"><span>{site.name}</span><a href={url('rss.xml')}>RSS</a><a href={url('politika-privatnosti/')}>Politika privatnosti</a></footer>
     </div>
-    <AnalyticsConsent />
   </body>
 </html>

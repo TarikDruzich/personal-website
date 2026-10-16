@@ -1,0 +1,15 @@
+---
+import { url } from '../lib/site';
+---
+<section id="analytics-consent" class="consent" aria-label="Pristanak na analitiku" hidden>
+  <p id="consent-description">Uz vaš pristanak koristim Google Analytics za razumijevanje posjećenosti bloga. Izbor možete promijeniti u footeru. <a href={url('politika-privatnosti/')}>Politika privatnosti</a>.</p>
+  <p id="consent-status" class="eyebrow" aria-live="polite"></p>
+  <div class="consent-actions">
+    <button type="button" id="analytics-accept">Prihvati</button>
+    <button type="button" id="analytics-reject">Odbij</button>
+    <button type="button" id="analytics-close" hidden>Zatvori</button>
+  </div>
+</section>
+<script>
+  import '../scripts/analytics-consent';
+</script>

@@ -106,7 +106,7 @@ function check(metrics, label) {
   assert.equal(metrics.paddingLeft, metrics.paddingRight);
   assert.equal(metrics.textAlign, 'left');
   assert.equal(metrics.lang, 'bs');
-  assert.equal(metrics.scripts, 0, 'Client scripts introduced');
+  assert.equal(metrics.scripts, 1, 'Expected only the local consent script before consent');
   assert.equal(metrics.unnamedLinks, 0, 'Unnamed link');
   assert.equal(metrics.headings.filter((heading) => heading.level === 1).length, 1);
   let previous = 0;
@@ -238,6 +238,42 @@ console.log(example);
     assert(await evaluate(`!!document.querySelector('.shell main#content')`), `Required layout missing on ${url}`);
     await evaluate(`Promise.all([...document.images].map(image => { image.loading = 'eager'; return image.decode().catch(() => {}); }))`);
   };
+  await cdp('Network.enable');
+  // Block external delivery while checking that only explicit consent requests GA.
+  await cdp('Network.setBlockedURLs', { urls: ['*googletagmanager.com*', '*google-analytics.com*'] });
+  const gaRequests = [];
+  socket.addEventListener('message', ({ data }) => {
+    const message = JSON.parse(data);
+    if (message.method === 'Network.requestWillBeSent' && /google(tagmanager|-analytics)\.com/.test(message.params.request.url)) gaRequests.push(message.params.request.url);
+  });
+  for (const width of [320, 375, 430, 1440]) {
+    await cdp('Emulation.setDeviceMetricsOverride', { width, height: 740, deviceScaleFactor: 1, mobile: width < 500 });
+    await navigate('');
+    await evaluate(`localStorage.clear()`);
+    await navigate('');
+    const beforeRequests = gaRequests.length;
+    assert(await evaluate(`!document.querySelector('#analytics-consent').hidden`));
+    assert.equal(await evaluate(`!!document.querySelector('#google-analytics')`), false);
+    const geometry = await evaluate(`['#analytics-accept','#analytics-reject'].map(selector => { const r = document.querySelector(selector).getBoundingClientRect(); return {width:r.width,height:r.height,x:r.x,right:r.right,bottom:r.bottom}; })`);
+    for (const box of geometry) assert(box.height >= 44 && box.x >= 0 && box.right <= width && box.bottom <= 740, 'Consent buttons accessible on screen');
+    assert.equal(geometry[0].height, geometry[1].height);
+    await evaluate(`document.querySelector('#analytics-reject').click()`);
+    await navigate('writing/');
+    assert(await evaluate(`document.querySelector('#analytics-consent').hidden && !document.querySelector('#google-analytics') && !document.cookie.includes('_ga')`));
+    assert.equal(gaRequests.length, beforeRequests, 'No Google requests before consent or after rejection');
+    await evaluate(`document.querySelector('#privacy-settings').click(); document.querySelector('#analytics-accept').click()`);
+    assert.equal(await evaluate(`document.querySelectorAll('#google-analytics').length`), 1);
+    await evaluate(`document.querySelector('#privacy-settings').click(); document.querySelector('#analytics-accept').click()`);
+    assert.equal(await evaluate(`document.querySelectorAll('#google-analytics').length`), 1, 'No duplicate GA loader');
+    await navigate('');
+    assert(await evaluate(`document.querySelector('#analytics-consent').hidden && !!document.querySelector('#google-analytics')`), 'Acceptance persists');
+    await evaluate(`document.cookie='_ga=test; path=/'; document.cookie='_ga_4SXX4F51YF=test; path=/'; document.querySelector('#privacy-settings').click(); document.querySelector('#analytics-reject').click()`);
+    await delay(300);
+    await navigate('writing/');
+    assert(await evaluate(`localStorage.getItem('analytics-consent-v1') === 'rejected' && !document.querySelector('#google-analytics') && !document.cookie.includes('_ga')`), 'Withdrawal persists and clears cookies');
+    await evaluate(`localStorage.clear()`);
+  }
+  console.log('Consent: accept, reject, persistence, withdrawal, cookies and mobile controls passed at four widths.');
   const routes = ['', 'writing/', 'writing/qa-reading-accessibility/', 'writing/qa-reading-cover/', '404.html'];
   const pageKind = path => ['', 'writing/'].includes(path) ? 'listing' : path === '404.html' ? 'error' : 'article';
   const metricsFor = path => evaluate(`(${measure.toString()})(${JSON.stringify(pageKind(path))})`);

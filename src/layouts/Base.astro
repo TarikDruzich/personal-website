@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import AnalyticsConsent from '../components/AnalyticsConsent.astro';
 import { site, url } from '../lib/site';
 interface Props { title?: string; description?: string; image?: string; imageAlt?: string; article?: boolean; published?: string; updated?: string; canonicalPath?: string; noindex?: boolean; }
 const { title, description = site.description, image, imageAlt, article = false, published, updated, canonicalPath, noindex = false } = Astro.props;
@@ -34,7 +35,8 @@ const links = [{ path: '', label: 'Početna' }, { path: 'writing/', label: 'Teks
         <nav aria-label="Glavna navigacija">{links.map(({path, label}) => <a href={url(path)} aria-current={(path ? Astro.url.pathname.startsWith(url(path)) : Astro.url.pathname === url()) ? 'page' : undefined}>{label}</a>)}</nav>
       </header>
       <main id="content" tabindex="-1"><slot /></main>
-      <footer class="site-footer"><span>{site.name}</span><a href={url('rss.xml')}>RSS</a></footer>
+      <footer class="site-footer"><span>{site.name}</span><a href={url('rss.xml')}>RSS</a><a href={url('politika-privatnosti/')}>Politika privatnosti</a><button type="button" id="privacy-settings" hidden>Postavke privatnosti</button></footer>
     </div>
+    <AnalyticsConsent />
   </body>
 </html>

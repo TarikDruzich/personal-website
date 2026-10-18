@@ -21,7 +21,7 @@ the role of randomness in success and failure - . Pluchino , A. E. Biondoy, A. R
 
 Procitao sam ovaj rad na temu talent vs luck koji definise zivot svakog od nas
 
-Sada nekoliko zakljucaka, ovo mi se cini kao zanimljiva tema za ovaj substack
+Sada nekoliko zakljucaka, ovo mi se cini kao zanimljiva tema za danas.
 
 - eight men own the same wealth as the 3.6 billion people constituting the poorest half of humanity. In the last 20 years, several theoretical models have been developed to derive the wealth distribution in the context of statistical physics and probability theory, often adopting a multi-agent perspective with a simple underlying dynamics
 
@@ -35,7 +35,6 @@ Tradicionalni meritokratski pogled tvrdi da su uspjeh i bogatstvo rezultat talen
 
 dok su bogatstvo i uspjeh ekstremno nejednako raspoređeni (Pareto distribucija)
 
-  
 
 
 ![Paretto distribucija](/uploads/image-2.png)

@@ -64,12 +64,12 @@ Novo istraživanje koje analiziramo u ovom članku otkriva zapanjujuće podatke:
 
 - Oni koji rano u životu dobiju dobre prilike, imaju veće šanse da se njihov uspjeh nastavi.
 - Ovaj fenomen je poznat kao Matthewov efekat: *"Onima koji imaju, dat će se još, a onima koji nemaju, oduzet će se i ono što imaju."*
--  Zato je teško "probiti se" bez inicijalnog kapitala, kontakata ili slučajnih povoljnih okolnosti.
+- Zato je teško "probiti se" bez inicijalnog kapitala, kontakata ili slučajnih povoljnih okolnosti.
 
 ### 4. Da li su Nobelovci najbolji naučnici – ili samo sretnici?
 
 - Studije pokazuju da naučnici imaju podjednaku vjerovatnoću da objave svoje najveće otkriće bilo kada u karijeri – uspjeh nije linearan.
-- Zaključak: Mnogo je skrivenih talenata koji nikada ne dobiju priliku, dok su neki postali slavni jer su jednostavno imali sreće u ključnom trenutku.
+- Mnogo je skrivenih talenata koji nikada ne dobiju priliku, dok su neki postali slavni jer su jednostavno imali sreće u ključnom trenutku.
 
 ### 5. Najbolji način za ulaganje u inovaciju? Nasumična raspodjela sredstava!
 
@@ -78,25 +78,20 @@ Jer kao otkirca Fleminga i Marije Kiri su slucajnost tako i analizom davanja gra
 - Model je testirao različite načine finansiranja naučnih istraživanja:  
 *Najgora strategija* → Dati novac samo *najuspješnijima* (jer su možda samo imali sreće).  
 *Najbolja strategija* → Raspodijeliti novac ravnomjerno svima ili čak nasumično – to je dovelo do više inovacija!
-- Ključna poruka: Ako želimo otkriti prave talente, moramo dati šansu i onima koji se nisu još dokazali.
+- Ako želimo otkriti prave talente, moramo dati šansu i onima koji se nisu još dokazali.
 
 ### 6. Zemlja u kojoj se rodite odlučuje pola vašeg uspjeha!
 
 - Studija pokazuje da oko 50% razlike u prihodima širom svijeta može se objasniti samo time u kojoj zemlji je osoba rođena.
-- Primjer: Da je Elon Musk ostao u Južnoj Africi umjesto da emigrira u SAD, da li bi postao milijarder?
--  Okruženje i prilike su važniji nego što mislimo, nije sve do pojedinca.
+-  Da je Elon Musk ostao u Južnoj Africi umjesto da emigrira u SAD, da li bi postao milijarder?
+- Okruženje i prilike su važniji nego što mislimo, nije sve do pojedinca.
 
 ### 7. Najbolji savjet za uspjeh? Povećaj broj prilika!
 
 - Formula uspjeha = Talent × Prilike × Sreća
 - Ljudi ne mogu kontrolisati sreću, ali mogu povećati broj situacija u kojima bi mogli imati sreće.
-- Praktičan savjet: Umrežavanje, pokušavanje novih stvari, izlaganje različitim iskustvima – to sve povećava šansu da se “pravi trenutak” desi baš tebi!
 
 ---
-
-### Zaključak: Šta možemo naučiti iz ovoga?
-
-Prilike su ključne. Društvo treba osigurati više prilika za sve, umjesto da resurse usmjerava samo ka onima koji su već uspjeli.  Prepoznajmo sreću. Uspjeh nije samo stvar rada i talenta – ako si uspio, vjerovatno si imao i dozu sreće! Inovacije ne dolaze uvijek od "najboljih". Ako želimo napredak, trebamo podržavati raznolikost ideja i ne bojati se eksperimentisanja sa sistemima raspodjele resursa.
 
 ---
 

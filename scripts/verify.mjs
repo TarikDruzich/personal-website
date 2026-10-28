@@ -104,7 +104,8 @@ for (const route of ['index.html', 'writing/index.html']) {
   assert(!/Projekti|O meni|Sada|GitHub|Substack/.test(html), 'Portfolio content leaked');
 }
 const home = readFileSync(join(root, 'index.html'), 'utf8');
-assert(home.includes('Tarik Družić') && home.includes('Zapisujem šta mi padne na pamet.'), 'Homepage identity missing');
+assert(home.includes('Tarik Družić') && /<h1(?:\s[^>]*)?>Zapisujem šta mi padne na pamet\.<\/h1>/.test(home), 'Homepage identity missing');
+assert(!/<h1(?:\s[^>]*)?>Tarik Družić<\/h1>/.test(home), 'Large homepage name heading is still present');
 if (!output.some((file) => /[\\/]writing[\\/].+[\\/]index.html$/.test(file))) {
   for (const route of ['index.html', 'writing/index.html']) assert(readFileSync(join(root, route), 'utf8').includes('Ovdje će uskoro biti prvi tekst.'), 'Empty state missing');
   assert(!rss.includes('<item>'), 'Empty RSS contains articles');

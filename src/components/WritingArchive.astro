@@ -8,14 +8,15 @@ const { posts, home = false, current = 1, total = 1 } = Astro.props;
 const pageUrl = (page: number) => page === 1 ? url(home ? '' : 'writing/') : url(`${home ? '' : 'writing/'}page/${page}/`);
 ---
 <Base title={home && current === 1 ? undefined : `Tekstovi${current > 1 ? ` · ${current}` : ''}`}>
-<header class="archive-heading"><h1>{home ? site.name : 'Tekstovi'}</h1>{home && <p>{site.description}</p>}</header>
+<header class:list={['archive-heading', { 'home-heading': home }]}><h1>{home ? site.description : 'Tekstovi'}</h1></header>
 <PostList posts={posts} />
 {total > 1 && <nav class="pagination" aria-label="Stranice tekstova">{current > 1 && <a href={pageUrl(current - 1)} rel="prev">← Noviji tekstovi</a>}<span>Stranica {current} od {total}</span>{current < total && <a href={pageUrl(current + 1)} rel="next">Stariji tekstovi →</a>}</nav>}
 </Base>
 <style>
 .archive-heading { padding-block:2rem 1.5rem; text-align:center; }
 .archive-heading h1 { margin:0 0 .75rem; }
-.archive-heading p { color:var(--muted); margin:0; font-family:var(--serif); font-size:1.25rem; }
+.home-heading { padding-top:1.5rem; }
+.home-heading h1 { color:var(--muted); margin:0; font-family:var(--serif); font-size:1.25rem; line-height:1.75; }
 .pagination { justify-content:space-between; align-items:center; margin-bottom:2rem; font-family:var(--mono); font-size:.875rem; }
 .pagination a { min-height:44px; display:inline-flex; align-items:center; }
 </style>

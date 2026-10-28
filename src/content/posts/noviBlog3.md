@@ -93,6 +93,8 @@ Jer kao otkirca Fleminga i Marije Kiri su slucajnost tako i analizom davanja gra
 
 ---
 
+## Sta sam gledao u ovih 12 dana
+
 ---
 
 ![Jacob elordi smece film](/uploads/thedogstarsfilmposter.jpg)

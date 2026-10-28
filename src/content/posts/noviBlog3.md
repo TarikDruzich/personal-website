@@ -49,7 +49,7 @@ Kako bi istražili ovu dinamiku, autori razvijaju Talent vs Luck (TvL) model, ko
 
 Novo istraživanje koje analiziramo u ovom članku otkriva zapanjujuće podatke: najuspješniji ljudi nisu nužno najtalentovaniji , već najsretniji. Njihov uspjeh često zavisi od slučajnosti, prilika i okruženja u kojem su se našli, a ne samo od njihovih sposobnosti i truda. Pogledajmo šta nauka kaže o pravim uzrocima uspjeha i kako možemo promijeniti način na koji vrednujemo talenat i trud.
 
-### 1. Najuspješniji nisu najtalentovaniji – nego najsretniji!
+### 1. Najuspješniji nisu najtalentovaniji nego najsretniji!
 
 - Istraživanje pokazuje da prosječno talentovani, ali sretniji pojedinci češće postižu vrhunski uspjeh nego oni izuzetno talentovani, ali nesretni.
 - Ključni faktor? Prilike i sreća. Ko ih dobije u pravom trenutku, ima ogromnu prednost.
@@ -66,7 +66,7 @@ Novo istraživanje koje analiziramo u ovom članku otkriva zapanjujuće podatke:
 - Ovaj fenomen je poznat kao Matthewov efekat: *"Onima koji imaju, dat će se još, a onima koji nemaju, oduzet će se i ono što imaju."*
 - Zato je teško "probiti se" bez inicijalnog kapitala, kontakata ili slučajnih povoljnih okolnosti.
 
-### 4. Da li su Nobelovci najbolji naučnici – ili samo sretnici?
+### 4. Da li su Nobelovci najbolji naučnici  ili samo sretnici?
 
 - Studije pokazuju da naučnici imaju podjednaku vjerovatnoću da objave svoje najveće otkriće bilo kada u karijeri – uspjeh nije linearan.
 - Mnogo je skrivenih talenata koji nikada ne dobiju priliku, dok su neki postali slavni jer su jednostavno imali sreće u ključnom trenutku.
@@ -86,7 +86,7 @@ Jer kao otkirca Fleminga i Marije Kiri su slucajnost tako i analizom davanja gra
 -  Da je Elon Musk ostao u Južnoj Africi umjesto da emigrira u SAD, da li bi postao milijarder?
 - Okruženje i prilike su važniji nego što mislimo, nije sve do pojedinca.
 
-### 7. Najbolji savjet za uspjeh? Povećaj broj prilika!
+### 7. Savjet za uspjeh? Povećati broj prilika!
 
 - Formula uspjeha = Talent × Prilike × Sreća
 - Ljudi ne mogu kontrolisati sreću, ali mogu povećati broj situacija u kojima bi mogli imati sreće.

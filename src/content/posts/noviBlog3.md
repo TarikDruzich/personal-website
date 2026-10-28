@@ -27,11 +27,11 @@ Sada nekoliko zakljucaka, ovo mi se cini kao zanimljiva tema za danas.
 
 However, the previous conclusion appears to be in strict contrast with the accepted evidence that human features and qualities cited above are normally distributed among the population, i.e. follow a symmetric Gaussian distribution around a given mean. For example, intelligence, as measured by IQ tests, follows this pattern: average IQ is 100, but nobody has an IQ of 1,000 or 10,000. The same holds for efforts, as measured by hours worked: someone works more hours than the average and someone less, but nobody works a billion times more hours than anybody else.
 
-Tradicionalni meritokratski pogled tvrdi da su uspjeh i bogatstvo rezultat talenta, inteligencije, rada i truda. Međutim, talent i druge sposobnosti su normalno distribuirani u populaciji (Gaussova distribucija
+Tradicionalni meritokratski pogled tvrdi da su uspjeh i bogatstvo rezultat talenta, inteligencije, rada i truda. Međutim, talent i druge sposobnosti su normalno distribuirani u populaciji (Gaussova distribucija)
 
 ![gausova distribucija](/uploads/image-1.png)
 
-)
+
 
 dok su bogatstvo i uspjeh ekstremno nejednako raspoređeni (Pareto distribucija)
 
@@ -41,7 +41,7 @@ dok su bogatstvo i uspjeh ekstremno nejednako raspoređeni (Pareto distribucija)
 
 . Ova razlika sugerira da sreća i slučajni faktori igraju ključnu ulogu.
 
-Brojna istraživanja potvrđuju da slučajnost utiče na uspjeh – od prezimena i mjesta rođenja do nasumičnih profesionalnih prilika. Autori ističu da su mnogi izuzetno uspješni pojedinci zapravo prosječno talentovani, ali su imali više sreće od drugih. Ovaj zaključak dovodi u pitanje meritokratske strategije koje nagrađuju samo one koji su već postigli uspjeh, umjesto da pravednije raspodjeljuju resurse.
+Brojna istraživanja potvrđuju da slučajnost utiče na uspjeh. Od prezimena i mjesta rođenja do nasumičnih profesionalnih prilika. Autori ističu da su mnogi izuzetno uspješni pojedinci zapravo prosječno talentovani, ali su imali više sreće od drugih. Ovaj zaključak dovodi u pitanje meritokratske strategije koje nagrađuju samo one koji su već postigli uspjeh, umjesto da pravednije raspodjeljuju resurse.
 
 Kako bi istražili ovu dinamiku, autori razvijaju **Talent vs Luck (TvL) model**, koji simulira karijere 1000 pojedinaca tokom 40 godina. Model pokazuje da sreća značajno doprinosi uspjehu, te da prosječno talentovani, ali sretniji pojedinci češće dostižu vrh od najtalentovanijih.
 
@@ -55,7 +55,6 @@ Novo istraživanje koje analiziramo u ovom članku otkriva zapanjujuće podatke:
 
 - Istraživanje pokazuje da **prosječno talentovani, ali sretniji pojedinci** češće postižu vrhunski uspjeh nego oni izuzetno talentovani, ali nesretni.
 - Ključni faktor? **Prilike i sreća**. Ko ih dobije u pravom trenutku, ima ogromnu prednost.
-- **Pitanje za čitatelje**: Da li je vaš omiljeni uspješni uzor zaista najbolji u svom polju – ili je samo imao više sreće?
 
 ### **2. Sistematska pristrasnost u ocjeni uspjeha**
 
@@ -87,7 +86,7 @@ Jer kao otkirca Fleminga i Marije Kiri su slucajnost tako i analizom davanja gra
 
 - Studija pokazuje da **oko 50% razlike u prihodima širom svijeta može se objasniti samo time u kojoj zemlji je osoba rođena**.
 - **Primjer:** Da je Elon Musk ostao u Južnoj Africi umjesto da emigrira u SAD, da li bi postao milijarder?
-- **Zaključak:** Okruženje i prilike su važniji nego što mislimo – nije sve do pojedinca.
+-  Okruženje i prilike su važniji nego što mislimo, nije sve do pojedinca.
 
 ### **7. Najbolji savjet za uspjeh? Povećaj broj prilika!**
 
@@ -99,14 +98,20 @@ Jer kao otkirca Fleminga i Marije Kiri su slucajnost tako i analizom davanja gra
 
 ### **Zaključak: Šta možemo naučiti iz ovoga?**
 
-✅ **Prilike su ključne**. Društvo treba osigurati više prilika za sve, umjesto da resurse usmjerava samo ka onima koji su već uspjeli. ✅ **Prepoznajmo sreću**. Uspjeh nije samo stvar rada i talenta – ako si uspio, vjerovatno si imao i dozu sreće! ✅ **Inovacije ne dolaze uvijek od "najboljih"**. Ako želimo napredak, trebamo podržavati raznolikost ideja i ne bojati se eksperimentisanja sa sistemima raspodjele resursa.
+**Prilike su ključne**. Društvo treba osigurati više prilika za sve, umjesto da resurse usmjerava samo ka onima koji su već uspjeli.  **Prepoznajmo sreću**. Uspjeh nije samo stvar rada i talenta – ako si uspio, vjerovatno si imao i dozu sreće! **Inovacije ne dolaze uvijek od "najboljih"**. Ako želimo napredak, trebamo podržavati raznolikost ideja i ne bojati se eksperimentisanja sa sistemima raspodjele resursa.
 
 ---
 
-Da li si imao/la srećne trenutke u životu koji su odredili tvoj put?
+![Jacob elordi smece film](/uploads/thedogstarsfilmposter.jpg)
 
-![image.png](/uploads/image-3.png)
+## 3/10
+
+![The weight](/uploads/f12f137e6f6efa195627b6f07b10fce0.jpg)
+
+### 8/10
+
+![lady  nafaka](/uploads/1664470124273.png)
 
 ![image.png](/uploads/image-4.png)
 
-[https://www.youtube.com/watch?v=WEhS9Y9HYjU](https://www.youtube.com/watch?v=WEhS9Y9HYjU)
+[pesma](https://www.youtube.com/watch?v=WEhS9Y9HYjU)

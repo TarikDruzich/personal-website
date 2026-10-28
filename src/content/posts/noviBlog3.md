@@ -6,7 +6,7 @@ category: Bilješke
 tags:
   - Nafaka
   - Sreca
-draft: true
+draft: false
 updated: 2026-10-16
 cover: /uploads/screenshot-2026-10-15-235808.png
 coverAlt: Park Residence

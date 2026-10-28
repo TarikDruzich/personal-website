@@ -1,6 +1,6 @@
 ---
 title: SrecaTalenat
-date: 2026-10-16
+date: 2026-10-28
 description: Kako Sreća Pobeđuje Talent?
 category: Bilješke
 tags:
